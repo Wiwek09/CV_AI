@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+
 
 const items: string[] = [
   "Web developer",
@@ -35,7 +35,7 @@ const SideNavBar = () => {
   console.log("SelectionTest", selectedItems);
 
   return (
-    <div className="w-[30%] min-h-screen">
+    <div className="min-h-screen">
       <Card className="h-auto flex flex-col py-6 px-4">
         <h1 className="text-center text-4xl font-bold ">Folder</h1>
         <div className="flex mt-6 flex-col space-y-3 ">
