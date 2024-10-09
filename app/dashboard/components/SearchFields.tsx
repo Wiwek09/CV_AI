@@ -2,20 +2,18 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ImLocation } from "react-icons/im";
-import { Button } from "@/components/ui/button";
-import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 import { FcSearch } from "react-icons/fc";
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SearchFields = () => {
-  const [position, setPosition] = useState("sort by");
-
   return (
     <div className="w-full flex flex-col justify-items-center space-y-2 ">
       {/* Top search fields */}
@@ -51,33 +49,19 @@ const SearchFields = () => {
         <hr className="bg-slate-500 h-1" />
       </div>
 
-      <div className="">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex space-x-2">
-              <span>{position}</span>
-              <span>
-                <IoMdArrowDropdown />
-              </span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-32 ">
-            <DropdownMenuRadioGroup
-              value={position}
-              onValueChange={setPosition}
-            >
-              <DropdownMenuRadioItem value="Recent">
-                Recent
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Oldest">
-                Oldest
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Random">
-                Random
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="recent">Recent</SelectItem>
+              <SelectItem value="oldest">Oldest</SelectItem>
+              <SelectItem value="random">Random</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>

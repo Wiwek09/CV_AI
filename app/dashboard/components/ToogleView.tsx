@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { BsFillGridFill } from "react-icons/bs";
 import { FaListUl } from "react-icons/fa";
 import {
@@ -8,9 +8,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ViewContext } from "../../context/ViewContext";
 
 const ToogleView = () => {
-  const [view, setView] = useState("grid");
+  const context = useContext(ViewContext);
+
+  if (!context) {
+    throw new Error("ToogleView must be used within a ViewProvider");
+  }
+
+  const { view, setView } = context;
+
   return (
     <div className="flex flex-row-reverse gap-1">
       <TooltipProvider>
