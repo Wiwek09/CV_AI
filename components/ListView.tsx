@@ -4,6 +4,7 @@ import { FaUser, FaPhoneAlt, FaLinkedin, FaGithub } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { IoLocation } from "react-icons/io5";
 import { GoDotFill } from "react-icons/go";
+import { Button } from "./ui/button";
 
 const ListView = () => {
   return (
@@ -98,6 +99,10 @@ const ListView = () => {
             <Card className="h-fit w-fit p-2 bg-slate-100 shadow-4xl rounded-lg text-sm">
               React
             </Card>
+          </div>
+
+          <div className="flex self-end">
+            <Button>View CV</Button>
           </div>
         </div>
       </Card>

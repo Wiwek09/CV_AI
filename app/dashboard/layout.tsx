@@ -11,7 +11,7 @@ export default function DashboardLayout({
 }) {
   return (
     <ViewProvider>
-    <div className=" w-full flex space-x-6 p-4 ">
+    <div className=" w-full flex space-x-6 ">
       <div className="w-[20%]">
         <SideNavBar />
       </div>
