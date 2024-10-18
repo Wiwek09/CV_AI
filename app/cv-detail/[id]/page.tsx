@@ -2,11 +2,6 @@ import React from "react";
 import ReactPdfView from "./components/ReactPdfView";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 
 const CVDetailPage = () => {
@@ -52,6 +47,10 @@ const CVDetailPage = () => {
               <div>
                 <span>Address :</span>
                 <span> Pokhara, Nepal</span>
+              </div>
+              <div>
+                <span>Rating :</span>
+                <span> 700</span>
               </div>
             </div>
           </div>
