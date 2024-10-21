@@ -5,7 +5,7 @@ import { Document, Page } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
-const ReactPdfView = () => {
+const ReactPdfView = ({ id }: { id: string }) => {
   const [numPages, setNumPages] = useState<number>();
   const [pageNumber, setPageNumber] = useState<number>(1);
 

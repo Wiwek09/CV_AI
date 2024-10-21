@@ -1,11 +1,13 @@
 "use client";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState, useContext } from "react";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import axios from "../../../utils/axiosConfig";
+import { ApiDataContext } from "../context/ApiDataContext";
+import { IDocumentData } from "@/interfaces/DocumentData";
 
 const items: string[] = [
   "Web Developer",
@@ -22,6 +24,7 @@ const SideNavBar = () => {
   const [uploading, setUploading] = useState<boolean>(false);
 
   const { toast } = useToast();
+  const apiData = useContext(ApiDataContext);
 
   const handleSelect = (item: string, isChecked: boolean) => {
     if (isChecked) {
@@ -60,7 +63,7 @@ const SideNavBar = () => {
     setUploading(true);
 
     try {
-      const response = await axios.post("/document", formData, {
+      const response = await axios.post("/document/document", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -87,13 +90,13 @@ const SideNavBar = () => {
     }
   };
 
-  console.log("SelectionTest", selectedItems);
-
   return (
     <div className="min-h-screen relative">
       <Card className="h-auto w-full flex flex-col space-y-6 py-6 px-4">
-        <h1 className="text-center text-4xl font-bold ">Folder</h1>
-        <div className="flex mt-6 flex-col space-y-3 ">
+        <h1 className="text-center text-3xl font-bold ">Uploaded File</h1>
+
+        {/* Folder details */}
+        {/* <div className="flex mt-6 flex-col space-y-3 ">
           {items.map((item) => {
             return (
               <label
@@ -109,9 +112,18 @@ const SideNavBar = () => {
               </label>
             );
           })}
-        </div>
+        </div> */}
 
         {/* File Upload */}
+
+        <div className="flex flex-col gap-2 truncate max-w-sm  ">
+          {apiData &&
+            apiData.map((item: any, index: number) => (
+              <span className="text-gray-700 text-xl">
+                {index + 1 + "." + item.cv_name}
+              </span>
+            ))}
+        </div>
 
         <div>
           <h1 className="text-center text-2xl font-bold">Cv-Upload</h1>

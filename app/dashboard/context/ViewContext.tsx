@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, ReactNode,useState } from "react";
+import React, { createContext, ReactNode, useState } from "react";
 
 type ViewType = "grid" | "list";
 
@@ -14,7 +14,7 @@ export const ViewContext = createContext<ViewContextType | null>(null);
 
 // Create a provider component to wrap around the layout
 export const ViewProvider = ({ children }: { children: ReactNode }) => {
-  const [view, setView] = useState<ViewType>("grid"); 
+  const [view, setView] = useState<ViewType>("list");
 
   return (
     <ViewContext.Provider value={{ view, setView }}>
@@ -22,4 +22,3 @@ export const ViewProvider = ({ children }: { children: ReactNode }) => {
     </ViewContext.Provider>
   );
 };
-

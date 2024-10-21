@@ -1,56 +1,90 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import ReactPdfView from "./components/ReactPdfView";
-import {
-  Card,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
-const CVDetailPage = () => {
+import { GoDotFill } from "react-icons/go";
+import axios from "@/utils/axiosConfig";
+
+const CVDetailPage = ({ params }: { params: string }) => {
+  const [data, setData] = useState<any>();
+  const { id }: any = params;
+  const pdfUrl = `http://localhost:8000/cv/${id}.pdf`;
+
+  useEffect(() => {
+    fetchFullCV();
+  }, []);
+
+  const fetchFullCV = async () => {
+    try {
+      const response = await axios.get(`/document/cv/${id}`);
+      console.log("Detail-CV", response.data.parsed_cv);
+      setData(response.data.parsed_cv);
+    } catch (error) {
+      console.error("Error fetching Data");
+    }
+  };
+
   return (
     <div className="h-screen flex space-x-4 w-full">
-      <Card className="w-[40%] bg-gray-100 ">
-        <ReactPdfView />
+      <Card className="w-[60%]  rounded-md bg-gray-100">
+        {/* <ReactPdfView id={id} /> */}
+        <div>
+          {/* Embed PDF viewer */}
+          <iframe
+            src={pdfUrl}
+            width="100%"
+            height={650}
+            title="CV PDF"
+            style={{ border: "none", borderRadius: "0.375rem" }}
+          ></iframe>
+
+          {/* Render additional details here if needed */}
+        </div>
       </Card>
 
-      <Card className="px-3 py-5 w-[60%] bg-gray-100 flex flex-col gap-3 overflow-y-auto">
+      <Card className="px-3 py-5 w-[40%] h-full bg-gray-100 flex flex-col gap-3 overflow-auto">
         {/* First Part */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="font-bold text-2xl">John doe</h1>
+            <h1 className="font-bold text-2xl">{data?.name}</h1>
             <p className="font-semibold">UI / UX designer</p>
             <p></p>
             <p className="flex gap-2">
               <span>Linkedin :</span>
-              <span>https://www.linkedin.com/feed/</span>
+              <span>{data?.linkedin_url ? data?.linkedin_url : ""}</span>
             </p>
             <p className="flex gap-2">
               <span>Github :</span>
-              <span>https://github.com/</span>
+              <span>{data?.github_url ? data?.github_url : ""}</span>
             </p>
 
             <p className="flex gap-2">
               <span>Website :</span>
-              <span>https://bibek-portfolio.vercel.app/</span>
+              <span>{data?.website ? data?.website : ""}</span>
             </p>
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="h-20">QR</div>
+            <div className="h-20 bg-white w-32 flex text-center justify-between ">
+              QR
+            </div>
             <div>
-              <div>
+              <div className="flex gap-1">
                 <span>Phone Number :</span>
-                <span> +977-9840171483</span>
+                <span>{data?.phone_number}</span>
               </div>
-              <div>
+              <div className="flex gap-1">
                 <span>Email :</span>
-                <span> kcbibekmail@gmail.com</span>
+                <span>{data?.email}</span>
               </div>
-              <div>
+              <div className="flex gap-1">
                 <span>Address :</span>
-                <span> Pokhara, Nepal</span>
+                <span>{data?.address}</span>
               </div>
-              <div>
+              <div className="flex gap-1">
                 <span>Rating :</span>
-                <span> 700</span>
+                <span> {data?.rating}</span>
               </div>
             </div>
           </div>
@@ -62,37 +96,102 @@ const CVDetailPage = () => {
 
         {/* Second Part */}
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
+          {/* Experience */}
+          <div className="flex flex-col gap-2">
             <p className="font-semibold text-xl flex gap-4 ">
-              Experience
-              <span>{`4 yrs`}</span>
+              Experiences
+              <span>
+                {data?.years_of_experience
+                  ? data?.years_of_experience + "years"
+                  : ""}
+              </span>
             </p>
-            <span>UI/UI Designer</span>
-            <span className="flex items-center gap-3">
-              <span>Company Name</span>
-              <span className="text-sm">{`(Start Date - End Date)`}</span>
-            </span>
-            <span className="flex flex-col gap-1">
-              <span>Description</span>
-              <span className="text-sm">{`. Bullet points`}</span>
-            </span>
+            <div className="flex flex-col gap-3">
+              {data?.work_experience.length > 0 &&
+                data?.work_experience.map((item: any, index: number) => (
+                  <div className="">
+                    <span className="font-semibold">
+                      {index + 1 + ". " + item?.job_title}
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <span className="font-semibold">
+                        {item?.company_name}
+                      </span>
+                      <span className="text-sm">
+                        {"(" + item?.start_date + " - " + item?.end_date + ")"}
+                      </span>
+                    </span>
+                    <span className="flex flex-col text-sm max-w-3xl ">
+                      {item.responsibilities.length > 0 &&
+                        item.responsibilities.map((el: any) => (
+                          <div className="flex gap-1 ">
+                            <span className="mt-[1px]">
+                              <GoDotFill />
+                            </span>
+                            {/* <span></span> */}
+                            <span className="">{el}</span>
+                          </div>
+                        ))}
+                    </span>
+                  </div>
+                ))}
+            </div>
           </div>
 
+          {/* Skills */}
           <div>
             <span className=" flex flex-col gap-1">
               <span className="font-semibold text-xl">Skills</span>
-              <span className="text-sm">{`. Bullet points`}</span>
+              {
+                <span className="flex flex-wrap gap-2  text-sm max-w-3xl">
+                  {data?.skills?.length > 0 &&
+                    data?.skills?.map((item: any) => (
+                      <div className="">
+                        <span className="flex shadow-md px-2 py-3 bg-[#f7f9fc] rounded-md w-fit  font-semibold">
+                          {item}
+                        </span>
+                      </div>
+                    ))}
+                </span>
+              }
             </span>
           </div>
 
+          {/* Education */}
           <div>
             <span className=" flex flex-col gap-1">
               <span className="font-semibold text-xl">Education</span>
-              <span className="flex gap-2 items-center ">
-                <span className="font-semibold">University Name</span>
-                <span className="text-sm">{`(Start Date - End Date)`}</span>
+              <span className="flex gap-2 flex-col ">
+                {data?.education?.length > 0 &&
+                  data?.education.map((el: any, index: number) => (
+                    <div>
+                      <p className="font-semibold">
+                        {index + 1 + ". " + el.degree}
+                      </p>
+                      <div className="flex gap-1 items-center">
+                        <span>{el?.institution}</span>
+                        <span className="text-sm">
+                          {"(" + el?.start_date + " - " + el?.end_date + ")"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
               </span>
             </span>
+          </div>
+
+          {/* Certificate */}
+          <div>
+            {data?.certifications?.length > 0 && (
+                <p className="font-semibold text-xl">Certification</p>
+              ) &&
+              data?.certifications.map((el: any, index: number) => (
+                <div className="flex flex-col">
+                  <p className="text-sm flex">
+                    {index + 1 + ". " + el?.certification_name}
+                  </p>
+                </div>
+              ))}
           </div>
         </div>
       </Card>

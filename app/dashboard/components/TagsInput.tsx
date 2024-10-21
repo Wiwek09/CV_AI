@@ -5,7 +5,6 @@ import React, {
   KeyboardEvent,
   ChangeEvent,
 } from "react";
-import { Input } from "@/components/ui/input";
 
 interface Tag {
   id: string;
@@ -13,10 +12,14 @@ interface Tag {
 }
 
 interface InlineTagInputProps {
-  onTagsChange: (tags: string[]) => void; // Prop to pass tags to the parent
+  onTagsChange: (tags: string[]) => void;
+  tagsValue: boolean; // Prop to pass tags to the parent
 }
 
-const TagsInput: React.FC<InlineTagInputProps> = ({ onTagsChange }) => {
+const TagsInput: React.FC<InlineTagInputProps> = ({
+  onTagsChange,
+  tagsValue,
+}) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [input, setInput] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -26,6 +29,15 @@ const TagsInput: React.FC<InlineTagInputProps> = ({ onTagsChange }) => {
       inputRef.current.focus();
     }
   }, [tags]);
+
+  // Clear tags when tagsValue is false
+  useEffect(() => {
+    if (!tagsValue) {
+      setTags([]); // Reset tags to an empty array
+      setInput(""); // Reset input field
+      onTagsChange([]); // Send empty tags to parent
+    }
+  }, [tagsValue, onTagsChange]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);

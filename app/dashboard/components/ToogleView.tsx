@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ViewContext } from "../../context/ViewContext";
+import { ViewContext } from "../context/ViewContext";
 
 const ToogleView = () => {
   const context = useContext(ViewContext);

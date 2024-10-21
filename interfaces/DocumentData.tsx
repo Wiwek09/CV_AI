@@ -1,4 +1,4 @@
-export interface IDocumentData{
-    id: string;
-    fileName: string;
+export interface IDocumentData {
+  cv_id: string;
+  cv_name: string;
 }

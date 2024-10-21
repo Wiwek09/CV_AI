@@ -8,46 +8,21 @@ import { GoDotFill } from "react-icons/go";
 import { Button } from "./ui/button";
 import { IDocumentData } from "@/interfaces/DocumentData";
 import axios from "@/utils/axiosConfig";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ListViewProps {
-  data: IDocumentData[];
+  data: IDocumentData[] | any;
 }
 
 const ListView = ({ data }: ListViewProps) => {
   const [individualData, setIndividualData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   if (data.length > 0) {
-  //     // Clear individualData before fetching to avoid duplicates
-  //     setIndividualData([]);
-
-  //     // Fetch data only once for each item
-  //     data.forEach((item) => {
-  //       fetchIndividualData(item.id);
-  //     });
-  //   }
-  // }, [data]); // Dependency array should include 'data'
-
-  // console.log("ListViewData", individualData);
-
-  // const fetchIndividualData = async (id: string) => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await axios.get(`/cv/${id}`);
-  //     setIndividualData((prevData): any => [
-  //       ...prevData,
-  //       response.data.parsed_cv,
-  //     ]);
-  //   } catch (error) {
-  //     console.error("Error fetching indiviudal document data:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const router = useRouter();
 
   useEffect(() => {
-    if (data.length > 0 && individualData.length === 0) {
+    if (data?.length > 0 && individualData?.length === 0) {
       fetchAllData();
     }
   }, [data]);
@@ -57,9 +32,10 @@ const ListView = ({ data }: ListViewProps) => {
 
     try {
       const fetchedData = await Promise.all(
-        data.map(async (item) => {
-          const response = await axios.get(`/cv/${item.id}`);
-          return response.data.parsed_cv;
+        data.map(async (item: any) => {
+          const response = await axios.get(`/document/cv/${item.cv_id}`);
+          // console.log("Response", response.data.parsed_cv);
+          return response.data;
         })
       );
 
@@ -71,46 +47,54 @@ const ListView = ({ data }: ListViewProps) => {
     }
   };
 
+  // const handleViewCV = (id: string) => {
+  //   router.push(`cv-detail/${id}`);
+  // };
+
+  console.log("Json-Data", individualData);
+
   return (
     <div className="flex flex-col space-y-5">
-      {data.length === 0 ? (
+      {data?.length === 0 ? (
         <p>No Document Available</p>
       ) : (
-        individualData.map((item: any) => (
-          <Card className="px-3 py-4 flex justify-between w-full ">
+        individualData?.map((item: any) => (
+          <Card className="px-3 py-4 flex justify-between w-full shadow-lg ">
             {/* Basic Information */}
             <div className="flex flex-col gap-1 w-[25%] overflow-clip">
               <div className="flex flex-col">
                 <h1 className="text-2xl font-bold">
-                  {item?.title ? item.title : "User Details"}
+                  {item?.parsed_cv.title
+                    ? item?.parsed_cv.title
+                    : "User Details"}
                 </h1>
                 <p className="flex items-center text-2xl gap-2">
                   <span className="flex items-center ">
                     <IoLocation className="text-[20px]" />
                     <span className="text-gray-700 text-sm">
-                      {item?.address ? item?.address : "Not Given"}
+                      {item?.parsed_cv.address
+                        ? item?.parsed_cv.address
+                        : "Not Given"}
                     </span>
                   </span>
                 </p>
                 <p className="flex gap-2 text-[20px]">
                   <span>
-                    {item?.linkedin_url && item?.linkedin_url != null ? (
-                      <FaLinkedin
-                        className="cursor-pointer"
-                        href={item?.linkedin_url}
-                        target="_blank"
-                      />
+                    {item?.parsed_cv.linkedin_url &&
+                    item?.parsed_cv.linkedin_url !== null ? (
+                      <Link href={item.parsed_cv.linkedin_url} target="_blank">
+                        <FaLinkedin className="cursor-pointer" />
+                      </Link>
                     ) : (
                       ""
                     )}
                   </span>
                   <span>
-                    {item?.github_url && item?.github_url != null ? (
-                      <FaGithub
-                        className="cursor-pointer"
-                        href={item?.github_url}
-                        target="_blank"
-                      />
+                    {item?.parsed_cv.github_url &&
+                    item?.parsed_cv.github_url != null ? (
+                      <Link href={item?.parsed_cv.github_url} target="_blank">
+                        <FaGithub className="cursor-pointer" />
+                      </Link>
                     ) : (
                       ""
                     )}
@@ -122,13 +106,15 @@ const ListView = ({ data }: ListViewProps) => {
                 <span>
                   <FaUser />
                 </span>
-                <span className="text-gray-700">{item?.name}</span>
+                <span className="text-gray-700">{item?.parsed_cv.name}</span>
               </p>
               <p className="flex items-center gap-2">
                 <span>
                   <FaPhoneAlt />
                 </span>
-                <span className="text-gray-700">{item?.phone_number}</span>
+                <span className="text-gray-700">
+                  {item?.parsed_cv.phone_number}
+                </span>
               </p>
               <p className="flex items-center gap-2">
                 <span>
@@ -136,36 +122,57 @@ const ListView = ({ data }: ListViewProps) => {
                 </span>
                 <span>
                   <a
-                    href={`mailto:${item?.email}`}
+                    href={`mailto:${item?.parsed_cv.email}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-700"
                   >
-                    {item?.email}
+                    {item?.parsed_cv.email}
                   </a>
                 </span>
               </p>
             </div>
 
             {/*Previous Experience */}
-            <div className="flex flex-col gap-6 w-[25%] overflow-clip ">
+            <div className="flex flex-col gap-6 w-[40%] overflow-clip ">
               <div className="flex items-center gap-2">
                 <h1 className="font-bold text-xl">Experience :</h1>
                 <p className="text-gray-700 ">
-                  {item?.years_of_experience} years
+                  {item?.parsed_cv.years_of_experience} years
                 </p>
               </div>
               <div className="flex flex-col">
-                <p className="font-semibold text-md">Backend Developer</p>
-                <p className="flex gap-2 text-sm text-gray-700">
-                  <span>BrandBuilder Np</span>
-                  <span>2023, Present</span>
+                <p className="font-semibold text-md">
+                  {item?.parsed_cv.work_experience?.length > 0
+                    ? item?.parsed_cv.work_experience[0]?.job_title
+                    : ""}
                 </p>
-                <p className="flex gap-1 items-center">
+                <p className="flex gap-2 text-sm text-gray-700">
+                  <span className="font-semibold">
+                    {item?.parsed_cv.work_experience?.length > 0
+                      ? item?.parsed_cv.work_experience[0]?.company_name + " : "
+                      : ""}
+                  </span>
                   <span>
+                    {item?.parsed_cv.work_experience?.length > 0
+                      ? item?.parsed_cv.work_experience[0]?.start_date +
+                        " - " +
+                        item?.parsed_cv.work_experience[0]?.end_date
+                      : ""}
+                  </span>
+                </p>
+                <p className="flex gap-1 items-start justify-start">
+                  <span className="mt-1">
                     <GoDotFill />
                   </span>
-                  <span className=" text-gray-700">description</span>
+                  <span className=" text-gray-700">
+                    {item?.parsed_cv.work_experience?.length > 0
+                      ? item?.parsed_cv.work_experience[0]?.responsibilities[0].slice(
+                          0,
+                          150
+                        )
+                      : ""}
+                  </span>
                 </p>
               </div>
             </div>
@@ -174,9 +181,9 @@ const ListView = ({ data }: ListViewProps) => {
             <div className="flex flex-col gap-2 w-[25%] overflow-clip">
               <div>
                 <h1 className="font-bold text-xl">Education</h1>
-                {item?.education?.length > 0 ? (
+                {item?.parsed_cv.education?.length > 0 ? (
                   <span className="text-sm text-gray-700">
-                    {item.education[0].degree}
+                    {item.parsed_cv.education[0].degree}
                   </span>
                 ) : (
                   <span className="text-sm text-red-700">
@@ -187,14 +194,23 @@ const ListView = ({ data }: ListViewProps) => {
 
               <div>
                 <h1 className="font-bold text-xl">License & Certification</h1>
-                <p className="text-sm text-gray-700">Azure Certificate</p>
+
+                {item?.parsed_cv.certifications?.length > 0 ? (
+                  <span className="text-sm text-gray-700">
+                    {item.parsed_cv.certifications[0].certification_name}
+                  </span>
+                ) : (
+                  <span className="text-sm text-red-700">
+                    Certification details not available
+                  </span>
+                )}
               </div>
 
               <div className="">
                 <h1 className="font-bold text-xl">Skills</h1>
                 <div className="flex flex-col gap-2 justify-center">
                   <div className="flex space-x-2">
-                    {item?.skills
+                    {item?.parsed_cv.skills
                       ?.slice(0, 3)
                       .map((skill: any, index: number) => (
                         <Card
@@ -207,15 +223,17 @@ const ListView = ({ data }: ListViewProps) => {
                       ))}
                   </div>
                   <div>
-                    {item?.skills?.length > 3 && (
-                      <span>...{item.skills.length - 3} more</span>
+                    {item?.parsed_cv.skills?.length > 3 && (
+                      <span>...{item.parsed_cv.skills.length - 3} more</span>
                     )}
                   </div>
                 </div>
               </div>
 
               <div className="flex self-end">
-                <Button>View CV</Button>
+                <Button onClick={() => router.push(`/cv-detail/${item._id}`)}>
+                  View CV
+                </Button>
               </div>
             </div>
           </Card>

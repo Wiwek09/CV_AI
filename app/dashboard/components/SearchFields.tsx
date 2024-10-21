@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ImLocation } from "react-icons/im";
 import { FcSearch } from "react-icons/fc";
-import axios from "@/utils/axiosConfig";
 import TagsInput from "./TagsInput";
+import { IFormInputData } from "@/interfaces/FormInputData";
 
 import {
   Select,
@@ -15,48 +15,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface IFormData {
-  address: string;
-  programming_language: string[];
-  prompt: string;
+interface ISearchFieldsProps {
+  onSubmit: (formData: IFormInputData) => void;
 }
 
-const SearchFields = () => {
-  const [formData, setFormData] = useState<IFormData>({
+const SearchFields = ({ onSubmit }: ISearchFieldsProps) => {
+  const [formData, setFormData] = useState<IFormInputData>({
     address: "",
-    programming_language: [],
+    programming_language: [""],
     prompt: "",
   });
+
+  const [tagsValue, setTagsValue] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const jsonData: IFormData = {
+    const jsonData: IFormInputData = {
       address: formData.address,
       programming_language: formData.programming_language,
       prompt: formData.prompt,
     };
-
-    try {
-      const response = await axios.post("/search_by_query", jsonData);
-      if (response.status === 200) {
-        console.log("Data submitted successfully", response.data);
-
-        // Clear the form fields
-        setFormData({
-          address: "",
-          programming_language: [],
-          prompt: "",
-        });
-        // Optionally reload data or handle state updates here
-      } else {
-        console.error("Error submitting data");
-      }
-    } catch (error) {
-      console.error("API call failed:", error);
-    }
-
-    console.log("Submitting Data: ", jsonData);
+    e.preventDefault();
+    onSubmit(jsonData);
+    // Clear the form fields after submission
+    setFormData({
+      address: "",
+      programming_language: [""],
+      prompt: "",
+    });
+    setTagsValue(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,10 +56,18 @@ const SearchFields = () => {
   };
 
   const handleTagsChange = (tags: string[]) => {
+    setTagsValue(true);
     setFormData({
       ...formData,
       programming_language: tags,
     });
+  };
+
+  // Disable Enter key for input fields to prevent submission
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
   };
 
   return (
@@ -86,6 +82,7 @@ const SearchFields = () => {
               value={formData.prompt}
               onChange={handleChange}
               placeholder="Enter Prompt (skills)"
+              onKeyDown={handleKeyDown} // Prevent form submission on Enter key
             />
           </div>
 
@@ -101,7 +98,7 @@ const SearchFields = () => {
 
           <div>
             {/* Inline tag input for programming languages */}
-            <TagsInput onTagsChange={handleTagsChange} />
+            <TagsInput onTagsChange={handleTagsChange} tagsValue={tagsValue} />
           </div>
 
           <div className="flex relative ">
@@ -112,6 +109,7 @@ const SearchFields = () => {
               onChange={handleChange}
               placeholder="Enter Location"
               className="pr-6"
+              onKeyDown={handleKeyDown}
             />
             <span className="absolute right-1 top-2 text-lg ">
               <ImLocation />
@@ -142,12 +140,12 @@ const SearchFields = () => {
         <hr className="bg-slate-500 h-1" />
       </div>
 
-      <div>
+      <div className="">
         <Select>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="sort by" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-[180px]">
             <SelectGroup>
               <SelectItem value="recent">Recent</SelectItem>
               <SelectItem value="oldest">Oldest</SelectItem>
