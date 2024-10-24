@@ -2,19 +2,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "@/utils/axiosConfig";
 import Image from "next/image";
-import { useSearch } from "@/app/dashboard/layout";
 import { ViewContext } from "@/app/dashboard/context/ViewContext";
+import { IFormInputData } from "@/interfaces/FormInputData";
 
-function GridView({}) {
-  const { searchData } = useSearch();
+function GridView({ searchData }: { searchData: IFormInputData | null }) {
+  // const { searchData } = useSearch();
   const [imageDataID, setImageDataID] = useState([]);
   const contextValue = useContext(ViewContext);
 
-  console.log("BIBIB", searchData);
+  // console.log("BIBIB", searchData);
   console.log("BIBView", contextValue?.view);
 
   useEffect(() => {
-    if ( contextValue?.view === "grid" && searchData !== null ) {
+    if (contextValue?.view === "grid" && searchData !== null) {
       getFullImageData();
     } else {
       setImageDataID([]);
@@ -63,7 +63,7 @@ function GridView({}) {
           </div>
         ))
       ) : (
-        <div>Loading ....</div>
+        <div>No Data Available....</div>
       )}
     </div>
   );

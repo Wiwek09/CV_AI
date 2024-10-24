@@ -4,9 +4,23 @@ import ListView from "@/components/ListView";
 import GridView from "@/components/GridView";
 import { ViewContext } from "./context/ViewContext";
 import { ApiDataContext } from "./context/ApiDataContext";
+import { SearchContext } from "./layout";
 
 function Dashboard() {
-  const apiData = useContext(ApiDataContext);
+  const apiContext = useContext(ApiDataContext);
+  const apiData = apiContext?.apiData ?? [];
+  // const setApiData = apiContext?.setApiData;
+
+  const searchContext = useContext(SearchContext);
+
+  if (!searchContext) {
+    throw new Error("Error occured");
+  }
+
+  const { listViewSearchData, gridViewSearchData } = searchContext;
+  // const { view } = useContext(ViewContext);
+  // const apiData = useContext(ApiDataContext);
+
   // const [data, setData] = useState<IDocumentData[]>([]);
 
   // useEffect(() => {
@@ -41,7 +55,11 @@ function Dashboard() {
   const { view } = context;
   return (
     <div className="w-full py-2 pb-6">
-      {view === "grid" ? <GridView /> : <ListView data={apiData} />}
+      {view === "grid" ? (
+        <GridView searchData={gridViewSearchData} /> // Pass grid-specific search data
+      ) : (
+        <ListView searchData={listViewSearchData} data={apiData} /> // Pass list-specific search data
+      )}
     </div>
   );
 }

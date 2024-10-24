@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Input } from "@/components/ui/input";
 import { ImLocation } from "react-icons/im";
 import { FcSearch } from "react-icons/fc";
 import TagsInput from "./TagsInput";
 import { IFormInputData } from "@/interfaces/FormInputData";
+import { SearchContext } from "../layout";
+import { ViewContext } from "../context/ViewContext";
 
 import {
   Select,
@@ -19,7 +21,24 @@ interface ISearchFieldsProps {
   onSubmit: (formData: IFormInputData) => void;
 }
 
-const SearchFields = ({ onSubmit }: ISearchFieldsProps) => {
+const SearchFields = () => {
+  const searchContext = useContext(SearchContext);
+  const viewContext = useContext(ViewContext);
+
+  if (!searchContext) {
+    throw new Error(
+      "SearchContext must be used within a SearchContext.Provider"
+    );
+  }
+
+  if (!viewContext) {
+    throw new Error("ViewContext must be used within a ViewProvider");
+  }
+
+  const { setListViewSearchData, setGridViewSearchData } = searchContext;
+
+  const { view } = viewContext;
+
   const [formData, setFormData] = useState<IFormInputData>({
     address: "",
     programming_language: [""],
@@ -37,7 +56,14 @@ const SearchFields = ({ onSubmit }: ISearchFieldsProps) => {
       prompt: formData.prompt,
     };
     e.preventDefault();
-    onSubmit(jsonData);
+    // Submit search data based on current view
+    if (view === "list") {
+      setListViewSearchData(jsonData); // Set data for list view
+    } else if (view === "grid") {
+      setGridViewSearchData(jsonData); // Set data for grid view
+    }
+
+    // onSubmit(jsonData);
     // Clear the form fields after submission
     setFormData({
       address: "",

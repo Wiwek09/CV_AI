@@ -10,38 +10,46 @@ import { IDocumentData } from "@/interfaces/DocumentData";
 import axios from "@/utils/axiosConfig";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { IFormInputData } from "@/interfaces/FormInputData";
 
 interface ListViewProps {
   data: IDocumentData[] | any;
+  searchData: IFormInputData | null;
 }
 
-const ListView = ({ data }: ListViewProps) => {
+const ListView = ({ data, searchData }: ListViewProps) => {
   const [individualData, setIndividualData] = useState<any>([]);
+  const [erroData, setErrorData] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
-    if (data?.length > 0 && individualData?.length === 0) {
+    if (data?.length > 0) {
+      setIndividualData([]);
       fetchAllData();
     }
   }, [data]);
+
+  console.log("ListData", data);
 
   const fetchAllData = async () => {
     setLoading(true);
 
     try {
       const fetchedData = await Promise.all(
-        data.map(async (item: any) => {
+        data?.map(async (item: any) => {
           const response = await axios.get(`/document/cv/${item.cv_id}`);
-          // console.log("Response", response.data.parsed_cv);
+          console.log("Response", response.data);
           return response.data;
         })
       );
 
       setIndividualData(fetchedData);
+      setErrorData(false);
     } catch (error) {
-      console.error("Error fetching individual document data:", error);
+      setErrorData(true);
+      console.log("Error fetching individual document data:", error);
     } finally {
       setLoading(false);
     }
@@ -55,18 +63,16 @@ const ListView = ({ data }: ListViewProps) => {
 
   return (
     <div className="flex flex-col space-y-5">
-      {data?.length === 0 ? (
+      {data?.length === 0 || erroData ? (
         <p>No Document Available</p>
       ) : (
         individualData?.map((item: any) => (
-          <Card className="px-3 py-4 flex justify-between w-full shadow-lg ">
+          <Card className="px-3 py-4 flex justify-between w-full shadow-lg transform  hover:border-[#7bf772]  transition duration-500 ease-in-out ">
             {/* Basic Information */}
             <div className="flex flex-col gap-1 w-[25%] overflow-clip">
               <div className="flex flex-col">
                 <h1 className="text-2xl font-bold">
-                  {item?.parsed_cv.title
-                    ? item?.parsed_cv.title
-                    : "User Details"}
+                  {item?.parsed_cv.position ? item?.parsed_cv.position : ""}
                 </h1>
                 <p className="flex items-center text-2xl gap-2">
                   <span className="flex items-center ">

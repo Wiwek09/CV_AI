@@ -1,18 +1,15 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "@/utils/axiosConfig";
 import { IDocumentData } from "@/interfaces/DocumentData";
 
-// Create the context
-export const ApiDataContext = createContext<IDocumentData[] | null>(null);
+// Define the context value structure
+interface ApiDataContextType {
+  apiData: IDocumentData[] | null;
+  setApiData: React.Dispatch<React.SetStateAction<IDocumentData[] | null>>;
+}
 
-// Custom hook to use the context
-// export const useApiData = () => useContext(ApiDataContext);
+// Create the context
+export const ApiDataContext = createContext<ApiDataContextType | null>(null);
 
 // Context Provider to fetch and provide the data
 export const ApiDataProvider = ({ children }: { children: ReactNode }) => {
@@ -40,7 +37,7 @@ export const ApiDataProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <ApiDataContext.Provider value={apiData}>
+    <ApiDataContext.Provider value={{ apiData, setApiData }}>
       {children}
     </ApiDataContext.Provider>
   );

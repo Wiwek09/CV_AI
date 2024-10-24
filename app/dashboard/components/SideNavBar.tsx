@@ -1,38 +1,20 @@
 "use client";
 import React, { ChangeEvent, FormEvent, useState, useContext } from "react";
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import axios from "../../../utils/axiosConfig";
 import { ApiDataContext } from "../context/ApiDataContext";
-import { IDocumentData } from "@/interfaces/DocumentData";
-
-const items: string[] = [
-  "Web Developer",
-  "AI Engineer",
-  "Mobile Developer",
-  "Devops",
-  "System Engineer",
-];
 
 const SideNavBar = () => {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-
   const [files, setFiles] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
 
   const { toast } = useToast();
-  const apiData = useContext(ApiDataContext);
-
-  const handleSelect = (item: string, isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedItems((prev) => [...prev, item]); // Add item if checked
-    } else {
-      setSelectedItems((prev) => prev.filter((i) => i !== item)); // Remove item if unchecked
-    }
-  };
+  const context = useContext(ApiDataContext);
+  const apiData = context?.apiData ?? null;
+  const setApiData = context?.setApiData;
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -44,7 +26,6 @@ const SideNavBar = () => {
     event.preventDefault();
 
     if (!files || files.length === 0) {
-      // alert("Please Select the file");
       toast({
         variant: "destructive",
         title: "File not selected",
@@ -54,8 +35,6 @@ const SideNavBar = () => {
     }
 
     const formData = new FormData();
-
-    //Append each file to FormData
     Array.from(files).forEach((file) => {
       formData.append("files", file);
     });
@@ -76,6 +55,11 @@ const SideNavBar = () => {
           action: <ToastAction altText="OK">OK</ToastAction>,
           className: "bg-[#7bf772]",
         });
+
+        // Fetch updated data after successful upload
+        await fetchUpdatedApiData();
+
+        // Reset form and files
         setFiles(null);
         (event.target as HTMLFormElement).reset();
       } else {
@@ -83,48 +67,33 @@ const SideNavBar = () => {
       }
     } catch (error) {
       console.log("Error uploading files:", error);
-      setFiles(null);
-      alert("An error occured during file upload");
+      alert("An error occurred during file upload");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const fetchUpdatedApiData = async () => {
+    try {
+      const { data } = await axios.get("/document/all_document");
+      const transformedData = data?.map((item: any) => {
+        const cv_id = Object.keys(item)[0];
+        const cv_name = item[cv_id];
+        return { cv_id, cv_name };
+      });
+      if (setApiData) {
+        setApiData(transformedData);
+      } else {
+        console.warn("setApiData is undefined. Could not update the API data.");
+      }
+    } catch (error) {
+      console.error("Error fetching updated data:", error);
     }
   };
 
   return (
     <div className="min-h-screen relative">
       <Card className="h-auto w-full flex flex-col space-y-6 py-6 px-4">
-        <h1 className="text-center text-3xl font-bold ">Uploaded File</h1>
-
-        {/* Folder details */}
-        {/* <div className="flex mt-6 flex-col space-y-3 ">
-          {items.map((item) => {
-            return (
-              <label
-                key={item}
-                className="flex items-center space-x-2 cursor-pointer w-fit"
-              >
-                <Checkbox
-                  onCheckedChange={(checked: boolean) =>
-                    handleSelect(item, checked)
-                  }
-                />
-                <span className="select-none">{item}</span>
-              </label>
-            );
-          })}
-        </div> */}
-
-        {/* File Upload */}
-
-        <div className="flex flex-col gap-2 truncate max-w-sm  ">
-          {apiData &&
-            apiData.map((item: any, index: number) => (
-              <span className="text-gray-700 text-xl">
-                {index + 1 + "." + item.cv_name}
-              </span>
-            ))}
-        </div>
-
         <div>
           <h1 className="text-center text-2xl font-bold">Cv-Upload</h1>
           <div>
@@ -134,7 +103,7 @@ const SideNavBar = () => {
             >
               <div className="flex-grow max-w-full overflow-hidden">
                 <input
-                  className="file-input  flex-wrap "
+                  className="file-input flex-wrap"
                   type="file"
                   accept="application/pdf"
                   onChange={handleFileSelect}
@@ -165,7 +134,6 @@ const SideNavBar = () => {
                   {uploading ? (
                     <div className="flex items-center justify-center gap-2">
                       <span>Uploading...</span>
-                      {/* Loader spinner */}
                       <svg
                         className="animate-spin h-5 w-5 text-white"
                         xmlns="http://www.w3.org/2000/svg"
@@ -194,6 +162,18 @@ const SideNavBar = () => {
               </div>
             </form>
           </div>
+        </div>
+
+        <h1 className="text-center text-3xl font-bold">Uploaded File</h1>
+
+        {/* Display uploaded files */}
+        <div className="flex flex-col gap-2 truncate max-w-sm">
+          {apiData &&
+            apiData.map((item: any, index: number) => (
+              <span key={index} className="text-gray-700 text-sm">
+                {index + 1 + "." + item.cv_name}
+              </span>
+            ))}
         </div>
       </Card>
     </div>
