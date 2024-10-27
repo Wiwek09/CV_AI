@@ -7,6 +7,7 @@ import { ViewProvider } from "./context/ViewContext";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { ApiDataProvider } from "./context/ApiDataContext";
 import { ViewContext } from "./context/ViewContext";
+import { BsNodeMinusFill } from "react-icons/bs";
 
 // export const SearchContext = createContext<{
 //   searchData: IFormInputData | null;
@@ -15,13 +16,9 @@ import { ViewContext } from "./context/ViewContext";
 export const SearchContext = createContext<{
   listViewSearchData: IFormInputData | null;
   gridViewSearchData: IFormInputData | null;
-  setListViewSearchData: React.Dispatch<
-    React.SetStateAction<IFormInputData | null>
-  >;
-  setGridViewSearchData: React.Dispatch<
-    React.SetStateAction<IFormInputData | null>
-  >;
-} | null>(null);
+  setListViewSearchData: React.Dispatch<React.SetStateAction<IFormInputData | null>>;
+  setGridViewSearchData: React.Dispatch<React.SetStateAction<IFormInputData | null >>;
+} | null >(null);
 
 // Create a hook for easy context usage
 // export const useSearch = () => {
