@@ -75,14 +75,9 @@ const SideNavBar = () => {
 
   const fetchUpdatedApiData = async () => {
     try {
-      const { data } = await axios.get("/document/all_document");
-      const transformedData = data?.map((item: any) => {
-        const cv_id = Object.keys(item)[0];
-        const cv_name = item[cv_id];
-        return { cv_id, cv_name };
-      });
+      const response = await axios.get("/document/all_document");
       if (setApiData) {
-        setApiData(transformedData);
+        setApiData(response.data);
       } else {
         console.warn("setApiData is undefined. Could not update the API data.");
       }
@@ -171,7 +166,7 @@ const SideNavBar = () => {
           {apiData &&
             apiData.map((item: any, index: number) => (
               <span key={index} className="text-gray-700 text-sm">
-                {index + 1 + "." + item.cv_name}
+                {index + 1 + "." + item.doc_name}
               </span>
             ))}
         </div>

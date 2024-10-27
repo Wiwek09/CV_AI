@@ -13,39 +13,13 @@ function Dashboard() {
 
   const searchContext = useContext(SearchContext);
 
+  console.log("UseApiContext", apiData);
+
   if (!searchContext) {
     throw new Error("Error occured");
   }
 
   const { listViewSearchData, gridViewSearchData } = searchContext;
-  // const { view } = useContext(ViewContext);
-  // const apiData = useContext(ApiDataContext);
-
-  // const [data, setData] = useState<IDocumentData[]>([]);
-
-  // useEffect(() => {
-  //   getImage();
-  // }, []);
-
-  // const getImage = async () => {
-  //   try {
-  //     const response: AxiosResponse<any> = await axios.get(
-  //       "/document/all_document"
-  //     );
-
-  //     // Transform the API response into the expected structure
-  //     const transformedData: IDocumentData[] = response.data.map(
-  //       (item: any) => {
-  //         const id = Object.keys(item)[0];
-  //         const fileName = item[id];
-  //         return { id, fileName };
-  //       }
-  //     );
-  //     setData(transformedData);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const context = useContext(ViewContext);
   if (!context) {
@@ -56,9 +30,9 @@ function Dashboard() {
   return (
     <div className="w-full py-2 pb-6">
       {view === "grid" ? (
-        <GridView searchData={gridViewSearchData} /> // Pass grid-specific search data
+        <GridView searchData={gridViewSearchData} />
       ) : (
-        <ListView searchData={listViewSearchData} data={apiData} /> // Pass list-specific search data
+        <ListView searchData={listViewSearchData} data={apiData} />
       )}
     </div>
   );
