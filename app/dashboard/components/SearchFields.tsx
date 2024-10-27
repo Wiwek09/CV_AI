@@ -17,10 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface ISearchFieldsProps {
-  onSubmit: (formData: IFormInputData) => void;
-}
-
 const SearchFields = () => {
   const searchContext = useContext(SearchContext);
   const viewContext = useContext(ViewContext);
@@ -58,12 +54,11 @@ const SearchFields = () => {
     e.preventDefault();
     // Submit search data based on current view
     if (view === "list") {
-      setListViewSearchData(jsonData); // Set data for list view
+      setListViewSearchData(formData);
     } else if (view === "grid") {
-      setGridViewSearchData(jsonData); // Set data for grid view
+      setGridViewSearchData(formData);
     }
 
-    // onSubmit(jsonData);
     // Clear the form fields after submission
     setFormData({
       address: "",

@@ -19,15 +19,7 @@ export const ApiDataProvider = ({ children }: { children: ReactNode }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get("/document/all_document");
-
-        const transformedData: IDocumentData[] = response.data.map(
-          (item: any) => {
-            const cv_id = Object.keys(item)[0];
-            const cv_name = item[cv_id];
-            return { cv_id, cv_name };
-          }
-        );
-        setApiData(transformedData);
+        setApiData(response.data);
       } catch (error) {
         console.error("Error fetching API data:", error);
       }

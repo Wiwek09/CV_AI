@@ -4,6 +4,11 @@ import axios from "@/utils/axiosConfig";
 import Image from "next/image";
 import { ViewContext } from "@/app/dashboard/context/ViewContext";
 import { IFormInputData } from "@/interfaces/FormInputData";
+import { IDocumentData } from "@/interfaces/DocumentData";
+
+interface GridViewProps {
+  data: IDocumentData
+}
 
 function GridView({ searchData }: { searchData: IFormInputData | null }) {
   // const { searchData } = useSearch();
@@ -12,6 +17,8 @@ function GridView({ searchData }: { searchData: IFormInputData | null }) {
 
   // console.log("BIBIB", searchData);
   console.log("BIBView", contextValue?.view);
+
+  console.log(`SearchData-Grid ${searchData}`);
 
   useEffect(() => {
     if (contextValue?.view === "grid" && searchData !== null) {
@@ -39,18 +46,18 @@ function GridView({ searchData }: { searchData: IFormInputData | null }) {
         console.error("Unexpected response status:", response.status);
       }
     } catch (error) {
-      console.error("Erro Fetching");
+      console.error("Erro Fetching", error);
     }
   };
 
-  console.log("CheckIMG", imageDataID);
+  // console.log("CheckIMG", imageDataID);
 
   return (
     // <div className="bg-gray-200 rounded-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
     <div className="masonry-container bg-gray-100">
       {imageDataID.length > 0 ? (
         imageDataID.map((item: any, index) => (
-          <div className="masonry-item">
+          <div key={index} className="masonry-item">
             <Image
               src={`http://localhost:8000/cv_images/${item.img_id}.webp`}
               alt={`Image ${index + 1}`}

@@ -1,4 +1,5 @@
 export interface IDocumentData {
-  cv_id: string;
-  cv_name: string;
+  doc_id: string;
+  doc_name: string;
+  image_id: string;
 }

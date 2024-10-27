@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card } from "./ui/card";
 import { FaUser, FaPhoneAlt, FaLinkedin, FaGithub } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -22,16 +22,42 @@ const ListView = ({ data, searchData }: ListViewProps) => {
   const [erroData, setErrorData] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const prevSearchData = useRef<IFormInputData | null>(null);
+
   const router = useRouter();
 
+  //Session of search
+  // const sessionListData = sessionStorage.setItem("sessionListData",)
+
   useEffect(() => {
-    if (data?.length > 0) {
-      setIndividualData([]);
+    const storedSearchData = sessionStorage.getItem("searchData");
+    const storedIndividualData = sessionStorage.getItem("individualData");
+
+    if (storedSearchData && data?.length === 0) {
+      // Clear searchData from session storage on full reload
+      sessionStorage.removeItem("searchData");
+      sessionStorage.removeItem("individualData");
+    }
+
+    if (storedSearchData && storedIndividualData) {
+      // If session storage has data, load it
+      setIndividualData(JSON.parse(storedIndividualData));
+      prevSearchData.current = JSON.parse(storedSearchData);
+    } else if (data?.length > 0 && !searchData) {
       fetchAllData();
     }
   }, [data]);
 
-  console.log("ListData", data);
+  useEffect(() => {
+    if (searchData && searchData !== prevSearchData.current) {
+      prevSearchData.current = searchData;
+      fetchSearchData();
+    }
+  }, [searchData]);
+
+  console.log("ListData", searchData);
+
+  // console.log("SearchData:", searchIDData);
 
   const fetchAllData = async () => {
     setLoading(true);
@@ -39,13 +65,13 @@ const ListView = ({ data, searchData }: ListViewProps) => {
     try {
       const fetchedData = await Promise.all(
         data?.map(async (item: any) => {
-          const response = await axios.get(`/document/cv/${item.cv_id}`);
-          console.log("Response", response.data);
+          const response = await axios.get(`/document/cv/${item.doc_id}`);
           return response.data;
         })
       );
 
       setIndividualData(fetchedData);
+      sessionStorage.setItem("individualData", JSON.stringify(fetchedData));
       setErrorData(false);
     } catch (error) {
       setErrorData(true);
@@ -55,19 +81,47 @@ const ListView = ({ data, searchData }: ListViewProps) => {
     }
   };
 
-  // const handleViewCV = (id: string) => {
-  //   router.push(`cv-detail/${id}`);
-  // };
+  const fetchSearchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `/document/search_by_query`,
+        searchData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      if (response.status === 200) {
+        const searchIds = response.data;
+        const fetchedData = await Promise.all(
+          searchIds?.map(async (item: any) => {
+            const response = await axios.get(`/document/cv/${item.doc_id}`);
+            return response.data;
+          })
+        );
+        setIndividualData(fetchedData);
+        sessionStorage.setItem("searchData", JSON.stringify(searchData));
+        sessionStorage.setItem("individualData", JSON.stringify(fetchedData));
+      }
+    } catch (error) {
+      console.log("Error fetching", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   console.log("Json-Data", individualData);
 
   return (
     <div className="flex flex-col space-y-5">
-      {data?.length === 0 || erroData ? (
+      {individualData?.length === 0 || erroData ? (
         <p>No Document Available</p>
       ) : (
         individualData?.map((item: any) => (
-          <Card className="px-3 py-4 flex justify-between w-full shadow-lg transform  hover:border-[#7bf772]  transition duration-500 ease-in-out ">
+          <Card className="px-3 py-4 flex justify-between w-full shadow-lg transform  hover:border-[#7bf772] hover-border-8 transition duration-500 ease-in-out ">
             {/* Basic Information */}
             <div className="flex flex-col gap-1 w-[25%] overflow-clip">
               <div className="flex flex-col">
