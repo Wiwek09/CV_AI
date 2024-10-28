@@ -135,7 +135,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
         setIndividualData((prevData: any) =>
           prevData.filter((doc: any) => doc._id !== id)
         );
-        console.log("Document deleted successfully");
+        
       } else {
         console.error("Failed to delete document");
       }

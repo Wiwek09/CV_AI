@@ -97,7 +97,7 @@ const TagsInput: React.FC<InlineTagInputProps> = ({
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
           placeholder={tags.length === 0 ? placeholderText : ""}
-          className="flex-grow outline-none bg-transparent"
+          className="flex-grow w-52 outline-none bg-transparent"
         />
       </div>
     </div>
