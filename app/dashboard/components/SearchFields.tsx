@@ -36,9 +36,10 @@ const SearchFields = () => {
   const { view } = viewContext;
 
   const [formData, setFormData] = useState<IFormInputData>({
-    address: "",
-    programming_language: [""],
     prompt: "",
+    programming_language: [""],
+    skill: [""],
+    address: "",
   });
 
   const [tagsValue, setTagsValue] = useState(true);
@@ -46,11 +47,6 @@ const SearchFields = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const jsonData: IFormInputData = {
-      address: formData.address,
-      programming_language: formData.programming_language,
-      prompt: formData.prompt,
-    };
     e.preventDefault();
     // Submit search data based on current view
     if (view === "list") {
@@ -61,9 +57,10 @@ const SearchFields = () => {
 
     // Clear the form fields after submission
     setFormData({
-      address: "",
-      programming_language: [""],
       prompt: "",
+      programming_language: [""],
+      skill: [""],
+      address: "",
     });
     setTagsValue(false);
   };
