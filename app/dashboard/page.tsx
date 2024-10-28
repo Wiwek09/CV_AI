@@ -30,7 +30,7 @@ function Dashboard() {
   return (
     <div className="w-full py-2 pb-6">
       {view === "grid" ? (
-        <GridView searchData={gridViewSearchData} />
+        <GridView searchData={gridViewSearchData} data={apiData} />
       ) : (
         <ListView searchData={listViewSearchData} data={apiData} />
       )}

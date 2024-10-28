@@ -1,5 +1,6 @@
 export interface IFormInputData {
-  address: string;
-  programming_language: string[];
   prompt: string;
+  programming_language: string[];
+  skill: string[];
+  address: string;
 }

@@ -93,7 +93,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
           },
         }
       );
-      
+
       if (response.status === 200) {
         const searchIds = response.data;
         const fetchedData = await Promise.all(
