@@ -1,12 +1,14 @@
-"use client";
-import React, { useState, useContext } from "react";
-import { Input } from "@/components/ui/input";
-import { ImLocation } from "react-icons/im";
-import { FcSearch } from "react-icons/fc";
-import TagsInput from "./TagsInput";
-import { IFormInputData } from "@/interfaces/FormInputData";
-import { SearchContext } from "../layout";
-import { ViewContext } from "../context/ViewContext";
+'use client';
+import React, { useState, useContext } from 'react';
+import { Input } from '@/components/ui/input';
+import { ImLocation } from 'react-icons/im';
+import { FcSearch } from 'react-icons/fc';
+import { FaSearch } from 'react-icons/fa';
+
+import TagsInput from './TagsInput';
+import { IFormInputData } from '@/interfaces/FormInputData';
+import { SearchContext } from '../layout';
+import { ViewContext } from '../context/ViewContext';
 
 import {
   Select,
@@ -15,7 +17,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+
+interface ISearchFieldsProps {
+  onSubmit: (formData: IFormInputData) => void;
+}
 
 const SearchFields = () => {
   const searchContext = useContext(SearchContext);
@@ -23,12 +30,12 @@ const SearchFields = () => {
 
   if (!searchContext) {
     throw new Error(
-      "SearchContext must be used within a SearchContext.Provider"
+      'SearchContext must be used within a SearchContext.Provider'
     );
   }
 
   if (!viewContext) {
-    throw new Error("ViewContext must be used within a ViewProvider");
+    throw new Error('ViewContext must be used within a ViewProvider');
   }
 
   const { setSearchData } = searchContext;
@@ -36,10 +43,10 @@ const SearchFields = () => {
   // const { view } = viewContext;
 
   const [formData, setFormData] = useState<IFormInputData>({
-    prompt: "",
-    programming_language: [""],
-    skill: [""],
-    address: "",
+    prompt: '',
+    programming_language: [''],
+    skill: [''],
+    address: '',
   });
 
   const [tagsValue, setTagsValue] = useState(true);
@@ -56,10 +63,10 @@ const SearchFields = () => {
     setSearchData(formData);
     // Clear the form fields after submission
     setFormData({
-      prompt: "",
-      programming_language: [""],
-      skill: [""],
-      address: "",
+      prompt: '',
+      programming_language: [''],
+      skill: [''],
+      address: '',
     });
     setTagsValue(false);
   };
@@ -87,26 +94,27 @@ const SearchFields = () => {
       skill: tags,
     });
   };
+  const [isFocused, setIsFocused] = useState(false);
 
   // Disable Enter key for input fields to prevent submission
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
     }
   };
 
   return (
-    <div className="w-full flex flex-col justify-items-center space-y-2 ">
+    <div className='w-full mt-16 flex flex-col justify-center gap-y-10'>
       {/* Top search fields */}
       <form onSubmit={handleSubmit}>
-        <div className="flex justify-center space-x-12 text-center">
+        <div className='flex pr-5 justify-between text-center'>
           <div>
             <Input
-              type="string"
-              name="prompt"
+              type='string'
+              name='prompt'
               value={formData.prompt}
               onChange={handleChange}
-              placeholder="Enter Prompt (skills)"
+              placeholder='Enter Prompt (skills)'
               onKeyDown={handleKeyDown} // Prevent form submission on Enter key
             />
           </div>
@@ -121,49 +129,52 @@ const SearchFields = () => {
             />
           </div> */}
 
-          <div>
+          <div className='max-h-14'>
             {/* Inline tag input for programming languages */}
             <TagsInput
               onTagsChange={handleProgrammingLanguageTagsChange}
               tagsValue={tagsValue}
-              placeholderText="Enter Programming Language"
+              placeholderText='Enter Programming Language'
             />
           </div>
 
           {/* Tags Input for Skill */}
-          <div>
+          <div className='max-h-12'>
             <TagsInput
               onTagsChange={handleSkillTagsChange}
               tagsValue={tagsValue}
-              placeholderText="Enter Skill"
+              placeholderText='Enter Skill'
             />
           </div>
 
-          <div className="flex relative ">
-            <Input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter Location"
-              className="pr-6"
-              onKeyDown={handleKeyDown}
-            />
-            <span className="absolute right-1 top-2 text-lg ">
-              <ImLocation />
-            </span>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="flex items-center space-x-3 bg-[#7bf772] shadow-md px-3 py-2 rounded-lg group"
+          <div className='flex flex-shrink-0 '>
+            <div
+              className={` flex items-center border rounded-lg ${
+                isFocused ? 'pr-0' : 'pr-3'
+              }`}
             >
-              <span className="transform transition-transform duration-300 ease-in-out group-hover:translate-y-[-5px]">
-                <FcSearch />
+              <Input
+                className='max-h-12 border-none'
+                type='text'
+                name='address'
+                value={formData.address}
+                onChange={handleChange}
+                placeholder='Location'
+                onKeyDown={handleKeyDown}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+              />
+              {!isFocused && <ImLocation className='' />}
+            </div>
+            <Button
+              type='submit'
+              className=' bg-white ml-5 rounded-3xl group hover:bg-inherit'
+            >
+              <span className='transform transition-transform duration-300 ease-in-out group-hover:translate-y-[-3px]'>
+                <FaSearch className='text-black' />
               </span>
-              <span>Search</span>
-            </button>
+              {/* <span>Search</span> */}
+            </Button>
           </div>
         </div>
       </form>
@@ -174,20 +185,21 @@ const SearchFields = () => {
 
       {/* <div className="mt-4 text-center">Tags</div> */}
 
-      <div>
-        <hr className="bg-slate-500 h-1" />
-      </div>
+      {/* <div>
+        <hr className='bg-slate-200 mt-3 h-[1px]' />
+      </div> */}
 
-      {/* <div className="">
+      <div className=''>
         <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="sort by" />
+          <SelectTrigger className='w-[180px]'>
+            <SelectValue placeholder='Sort by' />
           </SelectTrigger>
-          <SelectContent className="w-[180px]">
+
+          <SelectContent className='w-[180px]'>
             <SelectGroup>
-              <SelectItem value="recent">Recent</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="random">Random</SelectItem>
+              <SelectItem value='recent'>Recent</SelectItem>
+              <SelectItem value='oldest'>Oldest</SelectItem>
+              <SelectItem value='random'>Random</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
