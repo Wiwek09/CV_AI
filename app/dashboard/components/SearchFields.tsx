@@ -46,8 +46,6 @@ const SearchFields = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    e.preventDefault();
     // Submit search data based on current view
     if (view === "list") {
       setListViewSearchData(formData);
@@ -73,11 +71,19 @@ const SearchFields = () => {
     });
   };
 
-  const handleTagsChange = (tags: string[]) => {
+  const handleProgrammingLanguageTagsChange = (tags: string[]) => {
     setTagsValue(true);
     setFormData({
       ...formData,
       programming_language: tags,
+    });
+  };
+
+  const handleSkillTagsChange = (tags: string[]) => {
+    setTagsValue(true);
+    setFormData({
+      ...formData,
+      skill: tags,
     });
   };
 
@@ -116,7 +122,20 @@ const SearchFields = () => {
 
           <div>
             {/* Inline tag input for programming languages */}
-            <TagsInput onTagsChange={handleTagsChange} tagsValue={tagsValue} />
+            <TagsInput
+              onTagsChange={handleProgrammingLanguageTagsChange}
+              tagsValue={tagsValue}
+              placeholderText="Enter Programming Language"
+            />
+          </div>
+
+          {/* Tags Input for Skill */}
+          <div>
+            <TagsInput
+              onTagsChange={handleSkillTagsChange}
+              tagsValue={tagsValue}
+              placeholderText="Enter Skill"
+            />
           </div>
 
           <div className="flex relative ">
@@ -158,7 +177,7 @@ const SearchFields = () => {
         <hr className="bg-slate-500 h-1" />
       </div>
 
-      <div className="">
+      {/* <div className="">
         <Select>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="sort by" />
@@ -171,7 +190,7 @@ const SearchFields = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
 
       <div>
         <hr className="bg-slate-500 h-1" />

@@ -19,7 +19,7 @@ function Dashboard() {
     throw new Error("Error occured");
   }
 
-  const { listViewSearchData, gridViewSearchData } = searchContext;
+  const { searchData, setSearchData } = searchContext;
 
   const context = useContext(ViewContext);
   if (!context) {
@@ -30,9 +30,9 @@ function Dashboard() {
   return (
     <div className="w-full py-2 pb-6">
       {view === "grid" ? (
-        <GridView searchData={gridViewSearchData} data={apiData} />
+        <GridView searchData={searchData} data={apiData} />
       ) : (
-        <ListView searchData={listViewSearchData} data={apiData} />
+        <ListView searchData={searchData} data={apiData} />
       )}
     </div>
   );

@@ -13,12 +13,14 @@ interface Tag {
 
 interface InlineTagInputProps {
   onTagsChange: (tags: string[]) => void;
-  tagsValue: boolean; // Prop to pass tags to the parent
+  tagsValue: boolean;
+  placeholderText?: string;
 }
 
 const TagsInput: React.FC<InlineTagInputProps> = ({
   onTagsChange,
   tagsValue,
+  placeholderText,
 }) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [input, setInput] = useState<string>("");
@@ -94,7 +96,7 @@ const TagsInput: React.FC<InlineTagInputProps> = ({
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
-          placeholder={tags.length === 0 ? "Enter Programming Language " : ""}
+          placeholder={tags.length === 0 ? placeholderText : ""}
           className="flex-grow outline-none bg-transparent"
         />
       </div>
