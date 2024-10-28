@@ -19,7 +19,7 @@ function Dashboard() {
     throw new Error("Error occured");
   }
 
-  const { searchData, setSearchData } = searchContext;
+  const { searchData } = searchContext;
 
   const context = useContext(ViewContext);
   if (!context) {

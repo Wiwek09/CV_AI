@@ -142,7 +142,7 @@ function GridView({ data, searchData }: GridViewProps) {
               layout="responsive"
             />
             {/* Overlay that appears on hover */}
-            <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex items-center justify-center">
+            <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex justify-center">
               <div className="text-white text-center p-4">
                 <h3 className="text-lg font-bold mb-2">Overview</h3>
                 <p className="text-sm">{item.skill_summary}</p>

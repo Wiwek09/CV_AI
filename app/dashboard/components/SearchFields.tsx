@@ -31,9 +31,9 @@ const SearchFields = () => {
     throw new Error("ViewContext must be used within a ViewProvider");
   }
 
-  const { setListViewSearchData, setGridViewSearchData } = searchContext;
+  const { setSearchData } = searchContext;
 
-  const { view } = viewContext;
+  // const { view } = viewContext;
 
   const [formData, setFormData] = useState<IFormInputData>({
     prompt: "",
@@ -47,12 +47,13 @@ const SearchFields = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Submit search data based on current view
-    if (view === "list") {
-      setListViewSearchData(formData);
-    } else if (view === "grid") {
-      setGridViewSearchData(formData);
-    }
+    // if (view === "list") {
+    //   setListViewSearchData(formData);
+    // } else if (view === "grid") {
+    //   setGridViewSearchData(formData);
+    // }
 
+    setSearchData(formData);
     // Clear the form fields after submission
     setFormData({
       prompt: "",
@@ -192,9 +193,9 @@ const SearchFields = () => {
         </Select>
       </div> */}
 
-      <div>
+      {/* <div>
         <hr className="bg-slate-500 h-1" />
-      </div>
+      </div> */}
     </div>
   );
 };

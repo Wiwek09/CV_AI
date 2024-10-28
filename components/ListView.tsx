@@ -11,6 +11,18 @@ import axios from "@/utils/axiosConfig";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IFormInputData } from "@/interfaces/FormInputData";
+import { MdDeleteForever } from "react-icons/md";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ListViewProps {
   data: IDocumentData[] | any;
@@ -114,6 +126,23 @@ const ListView = ({ data, searchData }: ListViewProps) => {
   };
 
   console.log("Json-Data", individualData);
+
+  const deleteCV = async (id: string) => {
+    try {
+      const response = await axios.delete(`/document/document/${id}`);
+      if (response.status === 200) {
+        // Filter out the deleted document
+        setIndividualData((prevData: any) =>
+          prevData.filter((doc: any) => doc._id !== id)
+        );
+        console.log("Document deleted successfully");
+      } else {
+        console.error("Failed to delete document");
+      }
+    } catch (error) {
+      console.error("Error Deletion", error);
+    }
+  };
 
   return (
     <div className="flex flex-col space-y-5">
@@ -238,7 +267,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
             </div>
 
             {/* Education and skills */}
-            <div className="flex flex-col gap-2 w-[25%] overflow-clip">
+            <div className="flex flex-col gap-2 w-[25%] overflow-clip relative ">
               <div>
                 <h1 className="font-bold text-xl">Education</h1>
                 {item?.parsed_cv.education?.length > 0 ? (
@@ -295,6 +324,34 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                   View CV
                 </Button>
               </div>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <div className="cursor-pointer absolute right-2 text-2xl text-red-700 hover:scale-125 ease-in-out ">
+                    <MdDeleteForever />
+                  </div>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      the data.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-700 hover:bg-red-500"
+                      onClick={() => deleteCV(item?._id)}
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </Card>
         ))

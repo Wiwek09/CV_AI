@@ -7,33 +7,42 @@ import { ViewProvider } from "./context/ViewContext";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { ApiDataProvider } from "./context/ApiDataContext";
 
-export const SearchContext = createContext<{
-  listViewSearchData: IFormInputData | null;
-  gridViewSearchData: IFormInputData | null;
-  setListViewSearchData: React.Dispatch<React.SetStateAction<IFormInputData | null>>;
-  setGridViewSearchData: React.Dispatch<React.SetStateAction<IFormInputData | null >>;
-} | null >(null);
+// export const SearchContext = createContext<{
+//   listViewSearchData: IFormInputData | null;
+//   qgridViewSearchData: IFormInputData | null;
+//   setListViewSearchData: React.Dispatch<React.SetStateAction<IFormInputData | null>>;
+//   setGridViewSearchData: React.Dispatch<React.SetStateAction<IFormInputData | null >>;
+// } | null >(null);
 
+export const SearchContext = createContext<{
+  searchData: IFormInputData | null;
+  setSearchData: React.Dispatch<React.SetStateAction<IFormInputData | null>>;
+} | null>(null);
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // const [listViewSearchData, setListViewSearchData] =
+  //   useState<IFormInputData | null>(null);
+  // const [gridViewSearchData, setGridViewSearchData] =
+  //   useState<IFormInputData | null>(null);
 
-  const [listViewSearchData, setListViewSearchData] =
-    useState<IFormInputData | null>(null);
-  const [gridViewSearchData, setGridViewSearchData] =
-    useState<IFormInputData | null>(null);
+  const [searchData, setSearchData] = useState<IFormInputData | null>(null);
 
   return (
     <ViewProvider>
       <SearchContext.Provider
+        // value={{
+        //   listViewSearchData,
+        //   gridViewSearchData,
+        //   setListViewSearchData,
+        //   setGridViewSearchData,
+        // }}
         value={{
-          listViewSearchData,
-          gridViewSearchData,
-          setListViewSearchData,
-          setGridViewSearchData,
+          searchData,
+          setSearchData,
         }}
       >
         <ApiDataProvider>
