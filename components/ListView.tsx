@@ -42,13 +42,13 @@ const ListView = ({ data, searchData }: ListViewProps) => {
   // const sessionListData = sessionStorage.setItem("sessionListData",)
 
   useEffect(() => {
-    const storedSearchData = sessionStorage.getItem("searchData");
-    const storedIndividualData = sessionStorage.getItem("individualData");
+    const storedSearchData = sessionStorage.getItem('searchData');
+    const storedIndividualData = sessionStorage.getItem('individualData');
 
     if (storedSearchData && data?.length === 0) {
       // Clear searchData from session storage on full reload
-      sessionStorage.removeItem("searchData");
-      sessionStorage.removeItem("individualData");
+      sessionStorage.removeItem('searchData');
+      sessionStorage.removeItem('individualData');
     }
 
     if (storedSearchData && storedIndividualData) {
@@ -67,7 +67,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
     }
   }, [searchData]);
 
-  console.log("ListData", searchData);
+  console.log('ListData', searchData);
 
   // console.log("SearchData:", searchIDData);
 
@@ -83,11 +83,11 @@ const ListView = ({ data, searchData }: ListViewProps) => {
       );
 
       setIndividualData(fetchedData);
-      sessionStorage.setItem("individualData", JSON.stringify(fetchedData));
+      sessionStorage.setItem('individualData', JSON.stringify(fetchedData));
       setErrorData(false);
     } catch (error) {
       setErrorData(true);
-      console.log("Error fetching individual document data:", error);
+      console.log('Error fetching individual document data:', error);
     } finally {
       setLoading(false);
     }
@@ -101,7 +101,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
         searchData,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -115,17 +115,17 @@ const ListView = ({ data, searchData }: ListViewProps) => {
           })
         );
         setIndividualData(fetchedData);
-        sessionStorage.setItem("searchData", JSON.stringify(searchData));
-        sessionStorage.setItem("individualData", JSON.stringify(fetchedData));
+        sessionStorage.setItem('searchData', JSON.stringify(searchData));
+        sessionStorage.setItem('individualData', JSON.stringify(fetchedData));
       }
     } catch (error) {
-      console.log("Error fetching", error);
+      console.log('Error fetching', error);
     } finally {
       setLoading(false);
     }
   };
 
-  console.log("Json-Data", individualData);
+  console.log('Json-Data', individualData);
 
   const deleteCV = async (id: string) => {
     try {
@@ -145,122 +145,133 @@ const ListView = ({ data, searchData }: ListViewProps) => {
   };
 
   return (
-    <div className="flex flex-col space-y-5">
+    <div className='flex flex-col overflow-y-auto h-[100vh] space-y-5'>
       {individualData?.length === 0 || erroData ? (
         <p>No Document Available</p>
       ) : (
         individualData?.map((item: any) => (
-          <Card className="px-3 py-4 flex justify-between w-full shadow-lg transform  hover:border-[#7bf772] hover-border-8 transition duration-500 ease-in-out ">
+          <Card
+            key={item._id}
+            className='px-5 py-6 flex justify-between w-full shadow-lg transform mb-3  hover:border-[#7bf772]  transition duration-500 ease-in-out '
+          >
             {/* Basic Information */}
-            <div className="flex flex-col gap-1 w-[25%] overflow-clip">
-              <div className="flex flex-col">
-                <h1 className="text-2xl font-bold">
-                  {item?.parsed_cv.position ? item?.parsed_cv.position : ""}
+            <div className='flex flex-col gap-1 w-[25%] overflow-clip'>
+              <div className='flex mb-0 flex-col'>
+                <h1 className='mb-1 text-base underline font-bold'>
+                  {item?.parsed_cv.position
+                    ? item?.parsed_cv.position.toUpperCase()
+                    : ''}
                 </h1>
-                <p className="flex items-center text-2xl gap-2">
-                  <span className="flex items-center ">
-                    <IoLocation className="text-[20px]" />
-                    <span className="text-gray-700 text-sm">
+                <p className='flex items-center gap-2'>
+                  <span className=' flex items-center '>
+                    <IoLocation className='text-base mr-2 ' />
+                    <span className='text-gray-500 text-sm'>
                       {item?.parsed_cv.address
                         ? item?.parsed_cv.address
-                        : "Not Given"}
+                        : 'Not Given'}
                     </span>
-                  </span>
-                </p>
-                <p className="flex gap-2 text-[20px]">
-                  <span>
-                    {item?.parsed_cv.linkedin_url &&
-                    item?.parsed_cv.linkedin_url !== null ? (
-                      <Link href={item.parsed_cv.linkedin_url} target="_blank">
-                        <FaLinkedin className="cursor-pointer" />
-                      </Link>
-                    ) : (
-                      ""
-                    )}
-                  </span>
-                  <span>
-                    {item?.parsed_cv.github_url &&
-                    item?.parsed_cv.github_url != null ? (
-                      <Link href={item?.parsed_cv.github_url} target="_blank">
-                        <FaGithub className="cursor-pointer" />
-                      </Link>
-                    ) : (
-                      ""
-                    )}
                   </span>
                 </p>
               </div>
 
-              <p className="flex items-center gap-2 mt-4 ">
+              <p className='flex items-center gap-2 mt-0  '>
                 <span>
-                  <FaUser />
+                  <FaUser className='text-sm' />
                 </span>
-                <span className="text-gray-700">{item?.parsed_cv.name}</span>
+                <span className='text-gray-500 font-normal text-sm'>
+                  {item?.parsed_cv.name}
+                </span>
               </p>
-              <p className="flex items-center gap-2">
+              <p className='flex items-center gap-2'>
                 <span>
-                  <FaPhoneAlt />
+                  <FaPhoneAlt className='text-sm' />
                 </span>
-                <span className="text-gray-700">
+                <span className='text-gray-500 text-sm'>
                   {item?.parsed_cv.phone_number}
                 </span>
               </p>
-              <p className="flex items-center gap-2">
+              <p className='flex items-center gap-2'>
                 <span>
-                  <MdEmail />
+                  <MdEmail className='text-base' />
                 </span>
                 <span>
                   <a
                     href={`mailto:${item?.parsed_cv.email}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-700"
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-gray-500'
                   >
                     {item?.parsed_cv.email}
                   </a>
                 </span>
               </p>
+              <p className='flex gap-2'>
+                <span>
+                  {item?.parsed_cv.linkedin_url &&
+                  item?.parsed_cv.linkedin_url !== null ? (
+                    <Link href={item.parsed_cv.linkedin_url} target='_blank'>
+                      <FaLinkedin className='cursor-pointer' />
+                    </Link>
+                  ) : (
+                    ''
+                  )}
+                </span>
+                <span>
+                  {item?.parsed_cv.github_url &&
+                  item?.parsed_cv.github_url != null ? (
+                    <Link
+                      className='text-base'
+                      href={item?.parsed_cv.github_url}
+                      target='_blank'
+                    >
+                      <FaGithub className='cursor-pointer' />
+                    </Link>
+                  ) : (
+                    ''
+                  )}
+                </span>
+              </p>
             </div>
 
             {/*Previous Experience */}
-            <div className="flex flex-col gap-6 w-[40%] overflow-clip ">
-              <div className="flex items-center gap-2">
-                <h1 className="font-bold text-xl">Experience :</h1>
-                <p className="text-gray-700 ">
+            <div className='flex flex-col gap-6 w-[40%] overflow-clip '>
+              <div className='flex items-center gap-2'>
+                <h1 className='font-medium text-base'>Experience :</h1>
+                <p className='text-gray-500 text-sm '>
                   {item?.parsed_cv.years_of_experience} years
                 </p>
               </div>
-              <div className="flex flex-col">
-                <p className="font-semibold text-md">
+              <div className='flex flex-col'>
+                <p className='font-semibold mb-3 text-sm'>
                   {item?.parsed_cv.work_experience?.length > 0
                     ? item?.parsed_cv.work_experience[0]?.job_title
-                    : ""}
+                    : ''}
                 </p>
-                <p className="flex gap-2 text-sm text-gray-700">
-                  <span className="font-semibold">
+                <p className='flex gap-2 text-sm text-black '>
+                  <span className='font-medium text-gray-500 '>
                     {item?.parsed_cv.work_experience?.length > 0
-                      ? item?.parsed_cv.work_experience[0]?.company_name + " : "
-                      : ""}
+                      ? item?.parsed_cv.work_experience[0]?.company_name + ' : '
+                      : ''}
                   </span>
-                  <span>
+                  <span className='text-gray-500'>
                     {item?.parsed_cv.work_experience?.length > 0
                       ? item?.parsed_cv.work_experience[0]?.start_date +
-                        " - " +
+                        ' - ' +
                         item?.parsed_cv.work_experience[0]?.end_date
-                      : ""}
+                      : ''}
                   </span>
                 </p>
-                <p className="flex gap-1 items-start justify-start">
-                  <span className="mt-1">
+                <p className='flex gap-[5px] items-start justify-start'>
+                  <span className='mt-[6px]'>
                     <GoDotFill />
                   </span>
-                  <span className=" text-gray-700">
+                  <span className=' text-gray-500'>
                     {item?.parsed_cv.work_experience?.length > 0
                       ? item?.parsed_cv.work_experience[0]?.responsibilities[0].slice(
                           0,
                           150
                         )
-                      : ""}
+                      : ''}
                   </span>
                 </p>
               </div>
@@ -269,49 +280,51 @@ const ListView = ({ data, searchData }: ListViewProps) => {
             {/* Education and skills */}
             <div className="flex flex-col gap-2 w-[25%] overflow-clip relative ">
               <div>
-                <h1 className="font-bold text-xl">Education</h1>
+                <h1 className='font-bold text-base'>Education</h1>
                 {item?.parsed_cv.education?.length > 0 ? (
-                  <span className="text-sm text-gray-700">
+                  <span className='text-sm text-gray-500'>
                     {item.parsed_cv.education[0].degree}
                   </span>
                 ) : (
-                  <span className="text-sm text-red-700">
+                  <span className='text-sm text-red-700'>
                     Education details not available
                   </span>
                 )}
               </div>
 
               <div>
-                <h1 className="font-bold text-xl">License & Certification</h1>
+                <h1 className=' mt-5 font-bold text-base'>
+                  License & Certification
+                </h1>
 
                 {item?.parsed_cv.certifications?.length > 0 ? (
-                  <span className="text-sm text-gray-700">
+                  <span className='text-sm text-gray-500'>
                     {item.parsed_cv.certifications[0].certification_name}
                   </span>
                 ) : (
-                  <span className="text-sm text-red-700">
+                  <span className='text-sm text-red-700'>
                     Certification details not available
                   </span>
                 )}
               </div>
 
-              <div className="">
-                <h1 className="font-bold text-xl">Skills</h1>
-                <div className="flex flex-col gap-2 justify-center">
-                  <div className="flex space-x-2">
+              <div className=''>
+                <h1 className='font-bold text-base mt-5'>Skills</h1>
+                <div className='flex flex-col gap-2 justify-center'>
+                  <div className='flex space-x-2'>
                     {item?.parsed_cv.skills
                       ?.slice(0, 3)
                       .map((skill: any, index: number) => (
                         <Card
                           key={index}
-                          className=" h-fit w-fit p-2 bg-slate-100 shadow-4xl rounded-lg text-sm overflow-hidden whitespace-nowrap text-ellipsis"
+                          className=' h-fit w-fit p-2 bg-slate-100 shadow-4xl rounded-lg text-sm overflow-hidden whitespace-nowrap text-ellipsis'
                           title={skill}
                         >
                           {skill}
                         </Card>
                       ))}
                   </div>
-                  <div>
+                  <div className='text-sm text-gray-500 hover:cursor-pointer'>
                     {item?.parsed_cv.skills?.length > 3 && (
                       <span>...{item.parsed_cv.skills.length - 3} more</span>
                     )}
@@ -319,8 +332,11 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                 </div>
               </div>
 
-              <div className="flex self-end">
-                <Button onClick={() => router.push(`/cv-detail/${item._id}`)}>
+              <div className='flex self-end'>
+                <Button
+                  className='rounded-3xl'
+                  onClick={() => router.push(`/cv-detail/${item._id}`)}
+                >
                   View CV
                 </Button>
               </div>
