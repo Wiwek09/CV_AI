@@ -8,9 +8,8 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8000",
+        protocol: "https",
+        hostname: "cvai.azurewebsites.net",
         pathname: "/cv_images/**", // Path to the images in the backend
       },
     ],

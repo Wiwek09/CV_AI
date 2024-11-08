@@ -2,12 +2,11 @@
 import React, { useState, useContext } from "react";
 import { Input } from "@/components/ui/input";
 import { ImLocation } from "react-icons/im";
-import { FcSearch } from "react-icons/fc";
 import { FaSearch } from "react-icons/fa";
 
 import TagsInput from "./TagsInput";
 import { IFormInputData } from "@/interfaces/FormInputData";
-import { SearchContext } from "../layout";
+import { SearchContext } from "../context/SearchContext";
 import { ViewContext } from "../context/ViewContext";
 
 import {
@@ -19,10 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-
-interface ISearchFieldsProps {
-  onSubmit: (formData: IFormInputData) => void;
-}
 
 const SearchFields = () => {
   const searchContext = useContext(SearchContext);
@@ -104,10 +99,10 @@ const SearchFields = () => {
   };
 
   return (
-    <div className="w-full mt-16 flex flex-col justify-center gap-y-10">
+    <div className="w-full mt-8 flex flex-col justify-center space-y-6">
       {/* Top search fields */}
       <form onSubmit={handleSubmit}>
-        <div className="flex pr-5 justify-between text-center">
+        <div className="flex gap-3 justify-between text-center">
           <div>
             <Input
               type="string"
