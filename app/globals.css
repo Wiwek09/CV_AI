@@ -87,17 +87,9 @@
 /* Container styles */
 .masonry-container {
   column-count: 3;
-  column-gap: 16px;
+  column-gap: 22px;
   padding: 16px;
 }
-
-/* .masonry-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  grid-auto-rows: 10px;
-  gap: 20px;
-  column-count: 3;
-} */
 
 /* Image container styles */
 .masonry-item {
@@ -117,7 +109,7 @@
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 8px; /* Optional: rounded corners */
+  transition: transform 0.3s;
 }
 
 /* Responsive design */
