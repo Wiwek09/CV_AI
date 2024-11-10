@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { FaUser, FaPhoneAlt, FaLinkedin, FaGithub } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -9,9 +9,10 @@ import { Button } from "./ui/button";
 import { IDocumentData } from "@/interfaces/DocumentData";
 import axios from "@/utils/axiosConfig";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { MdDeleteForever } from "react-icons/md";
+import { useToast } from "@/hooks/use-toast";
+// import { ViewContext } from "@/app/dashboard/context/ViewContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,78 +31,65 @@ interface ListViewProps {
 }
 
 const ListView = ({ data, searchData }: ListViewProps) => {
-  const [individualData, setIndividualData] = useState<any>([]);
-  const [erroData, setErrorData] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const context = useContext(ViewContext);
 
-  const prevSearchData = useRef<IFormInputData | null>(null);
+  // const { view } = context;
 
-  const router = useRouter();
+  const [allData, setAllData] = useState<any>([]);
+  const [searchResults, setSearchResults] = useState<any>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  // const [erroData, setErrorData] = useState(false);
 
-  //Session of search
-  // const sessionListData = sessionStorage.setItem("sessionListData",)
-
-  useEffect(() => {
-    const storedSearchData = sessionStorage.getItem('searchData');
-    const storedIndividualData = sessionStorage.getItem('individualData');
-
-    if (storedSearchData && data?.length === 0) {
-      // Clear searchData from session storage on full reload
-      sessionStorage.removeItem('searchData');
-      sessionStorage.removeItem('individualData');
-    }
-
-    if (storedSearchData && storedIndividualData) {
-      // If session storage has data, load it
-      setIndividualData(JSON.parse(storedIndividualData));
-      prevSearchData.current = JSON.parse(storedSearchData);
-    } else if (data?.length > 0 && !searchData) {
-      fetchAllData();
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (searchData && searchData !== prevSearchData.current) {
-      prevSearchData.current = searchData;
-      fetchSearchData();
-    }
-  }, [searchData]);
-
-  console.log('ListData', searchData);
-
-  // console.log("SearchData:", searchIDData);
+  const { toast } = useToast();
 
   const fetchAllData = async () => {
-    setLoading(true);
+    const fetchedData: any[] = [];
 
     try {
-      const fetchedData = await Promise.all(
-        data?.map(async (item: any) => {
-          const response = await axios.get(`/document/cv/${item.doc_id}`);
-          return response.data;
-        })
-      );
-
-      setIndividualData(fetchedData);
-      sessionStorage.setItem('individualData', JSON.stringify(fetchedData));
-      setErrorData(false);
+      if (data.length > 0) {
+        for (const item of data) {
+          try {
+            const response = await axios.get(`/document/cv/${item.doc_id}`);
+            if (response.status === 200) {
+              fetchedData.push(response.data);
+            }
+          } catch (error) {
+            // Stop fetching if an error occurs
+            console.error("Error fetching document:", error);
+            break;
+          }
+        }
+        setAllData(fetchedData); // Update with successfully fetched data
+        // setErrorData(false);
+      }
     } catch (error) {
-      setErrorData(true);
-      console.log('Error fetching individual document data:', error);
-    } finally {
-      setLoading(false);
+      // setErrorData(true);
+      console.error("General error in fetching data:", error);
     }
   };
 
-  const fetchSearchData = async () => {
-    setLoading(true);
+  useEffect(() => {
+    if (!isSearching) {
+      fetchAllData();
+    }
+  }, [data, isSearching]);
+
+  useEffect(() => {
+    if (searchData) {
+      setIsSearching(true);
+      fetchSearchData(searchData);
+    }
+  }, [searchData]);
+
+  const fetchSearchData = async (searchData: IFormInputData) => {
+    // setLoading(true);
     try {
       const response = await axios.post(
         `/document/search_by_query`,
         searchData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -114,164 +102,180 @@ const ListView = ({ data, searchData }: ListViewProps) => {
             return response.data;
           })
         );
-        setIndividualData(fetchedData);
-        sessionStorage.setItem('searchData', JSON.stringify(searchData));
-        sessionStorage.setItem('individualData', JSON.stringify(fetchedData));
+        setSearchResults(fetchedData.filter((item) => item !== null));
       }
     } catch (error) {
-      console.log('Error fetching', error);
-    } finally {
-      setLoading(false);
+      console.log("Error fetching", error);
     }
   };
-
-  console.log('Json-Data', individualData);
 
   const deleteCV = async (id: string) => {
     try {
       const response = await axios.delete(`/document/document/${id}`);
       if (response.status === 200) {
         // Filter out the deleted document
-        setIndividualData((prevData: any) =>
+        setAllData((prevData: any) =>
           prevData.filter((doc: any) => doc._id !== id)
         );
-        
+        setSearchResults((prevData: any) =>
+          prevData.filter((doc: any) => doc._id !== id)
+        );
+        toast({
+          title: "Deletion Successful",
+          description: "File has been deleted sucessfully",
+          className: "bg-[#7bf772]",
+        });
       } else {
         console.error("Failed to delete document");
+        toast({
+          title: "Failed ",
+          variant: "destructive",
+          description: "Failed to Delete Data",
+        });
       }
     } catch (error) {
       console.error("Error Deletion", error);
+      toast({
+        title: "Deletion Error",
+        variant: "destructive",
+        description: "An error occurred while deleting the document.",
+      });
     }
   };
 
+  const displayedData =
+    isSearching && searchResults.length > 0 ? searchResults : allData;
+
   return (
-    <div className='flex flex-col overflow-y-auto h-[100vh] space-y-5'>
-      {individualData?.length === 0 || erroData ? (
+    <div className="flex flex-col px-4 py-4 rounded-md bg-gray-100  h-[100vh] overflow-y-scroll space-y-5 scrollbar-thin ">
+      {displayedData?.length === 0 ? (
         <p>No Document Available</p>
       ) : (
-        individualData?.map((item: any) => (
+        displayedData?.map((item: any) => (
           <Card
             key={item._id}
-            className='px-5 py-6 flex justify-between w-full shadow-lg transform mb-3  hover:border-[#7bf772]  transition duration-500 ease-in-out '
+            className="px-5 py-6 flex justify-between w-full shadow-lg transform mb-3  hover:border-[#7bf772]  transition duration-500 ease-in-out "
           >
             {/* Basic Information */}
-            <div className='flex flex-col gap-1 w-[25%] overflow-clip'>
-              <div className='flex mb-0 flex-col'>
-                <h1 className='mb-1 text-base underline font-bold'>
+            <div className="flex flex-col gap-1 w-[25%] overflow-clip">
+              <div className="flex mb-0 flex-col">
+                <h1 className="mb-1 text-base underline  underline-offset-2 font-bold">
                   {item?.parsed_cv.position
                     ? item?.parsed_cv.position.toUpperCase()
-                    : ''}
+                    : ""}
                 </h1>
-                <p className='flex items-center gap-2'>
-                  <span className=' flex items-center '>
-                    <IoLocation className='text-base mr-2 ' />
-                    <span className='text-gray-500 text-sm'>
+                <p className="flex items-center gap-2">
+                  <span className=" flex items-center ">
+                    <IoLocation className="text-base mr-2 " />
+                    <span className="text-gray-500 text-sm">
                       {item?.parsed_cv.address
                         ? item?.parsed_cv.address
-                        : 'Not Given'}
+                        : "Not Given"}
                     </span>
                   </span>
                 </p>
               </div>
 
-              <p className='flex items-center gap-2 mt-0  '>
+              <p className="flex items-center gap-2 mt-0  ">
                 <span>
-                  <FaUser className='text-sm' />
+                  <FaUser className="text-sm" />
                 </span>
-                <span className='text-gray-500 font-normal text-sm'>
+                <span className="text-gray-500 font-normal text-sm">
                   {item?.parsed_cv.name}
                 </span>
               </p>
-              <p className='flex items-center gap-2'>
+              <p className="flex items-center gap-2">
                 <span>
-                  <FaPhoneAlt className='text-sm' />
+                  <FaPhoneAlt className="text-sm" />
                 </span>
-                <span className='text-gray-500 text-sm'>
+                <span className="text-gray-500 text-sm">
                   {item?.parsed_cv.phone_number}
                 </span>
               </p>
-              <p className='flex items-center gap-2'>
+              <p className="flex items-center gap-2">
                 <span>
-                  <MdEmail className='text-base' />
+                  <MdEmail className="text-base" />
                 </span>
                 <span>
                   <a
                     href={`mailto:${item?.parsed_cv.email}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-gray-500'
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500"
                   >
                     {item?.parsed_cv.email}
                   </a>
                 </span>
               </p>
-              <p className='flex gap-2'>
+              <p className="flex gap-2">
                 <span>
                   {item?.parsed_cv.linkedin_url &&
                   item?.parsed_cv.linkedin_url !== null ? (
-                    <Link href={item.parsed_cv.linkedin_url} target='_blank'>
-                      <FaLinkedin className='cursor-pointer' />
+                    <Link href={item.parsed_cv.linkedin_url} target="_blank">
+                      <FaLinkedin className="cursor-pointer" />
                     </Link>
                   ) : (
-                    ''
+                    ""
                   )}
                 </span>
                 <span>
                   {item?.parsed_cv.github_url &&
                   item?.parsed_cv.github_url != null ? (
                     <Link
-                      className='text-base'
+                      className="text-base"
                       href={item?.parsed_cv.github_url}
-                      target='_blank'
+                      target="_blank"
                     >
-                      <FaGithub className='cursor-pointer' />
+                      <FaGithub className="cursor-pointer" />
                     </Link>
                   ) : (
-                    ''
+                    ""
                   )}
                 </span>
               </p>
             </div>
 
             {/*Previous Experience */}
-            <div className='flex flex-col gap-6 w-[40%] overflow-clip '>
-              <div className='flex items-center gap-2'>
-                <h1 className='font-medium text-base'>Experience :</h1>
-                <p className='text-gray-500 text-sm '>
-                  {item?.parsed_cv.years_of_experience} years
+            <div className="flex flex-col gap-6 w-[40%] overflow-clip ">
+              <div className="flex items-center gap-2">
+                <h1 className="font-medium text-base">Experience :</h1>
+                <p className="text-gray-500 text-sm ">
+                  {item?.parsed_cv.years_of_experience
+                    ? item?.parsed_cv.years_of_experience + " years"
+                    : ""}
                 </p>
               </div>
-              <div className='flex flex-col'>
-                <p className='font-semibold mb-3 text-sm'>
+              <div className="flex flex-col">
+                <p className="font-semibold mb-3 text-sm">
                   {item?.parsed_cv.work_experience?.length > 0
                     ? item?.parsed_cv.work_experience[0]?.job_title
-                    : ''}
+                    : ""}
                 </p>
-                <p className='flex gap-2 text-sm text-black '>
-                  <span className='font-medium text-gray-500 '>
+                <p className="flex gap-2 text-sm text-black ">
+                  <span className="font-medium text-gray-500 ">
                     {item?.parsed_cv.work_experience?.length > 0
-                      ? item?.parsed_cv.work_experience[0]?.company_name + ' : '
-                      : ''}
+                      ? item?.parsed_cv.work_experience[0]?.company_name + " : "
+                      : ""}
                   </span>
-                  <span className='text-gray-500'>
+                  <span className="text-gray-500">
                     {item?.parsed_cv.work_experience?.length > 0
                       ? item?.parsed_cv.work_experience[0]?.start_date +
-                        ' - ' +
+                        " - " +
                         item?.parsed_cv.work_experience[0]?.end_date
-                      : ''}
+                      : ""}
                   </span>
                 </p>
-                <p className='flex gap-[5px] items-start justify-start'>
-                  <span className='mt-[6px]'>
+                <p className="flex gap-[5px] items-start justify-start">
+                  <span className="mt-[6px]">
                     <GoDotFill />
                   </span>
-                  <span className=' text-gray-500'>
+                  <span className=" text-gray-500">
                     {item?.parsed_cv.work_experience?.length > 0
-                      ? item?.parsed_cv.work_experience[0]?.responsibilities[0].slice(
+                      ? item?.parsed_cv.work_experience[0]?.responsibilities[0]?.slice(
                           0,
                           150
                         )
-                      : ''}
+                      : ""}
                   </span>
                 </p>
               </div>
@@ -280,51 +284,51 @@ const ListView = ({ data, searchData }: ListViewProps) => {
             {/* Education and skills */}
             <div className="flex flex-col gap-2 w-[25%] overflow-clip relative ">
               <div>
-                <h1 className='font-bold text-base'>Education</h1>
+                <h1 className="font-bold text-base">Education</h1>
                 {item?.parsed_cv.education?.length > 0 ? (
-                  <span className='text-sm text-gray-500'>
+                  <span className="text-sm text-gray-500">
                     {item.parsed_cv.education[0].degree}
                   </span>
                 ) : (
-                  <span className='text-sm text-red-700'>
+                  <span className="text-sm text-red-700">
                     Education details not available
                   </span>
                 )}
               </div>
 
               <div>
-                <h1 className=' mt-5 font-bold text-base'>
+                <h1 className=" mt-5 font-bold text-base">
                   License & Certification
                 </h1>
 
                 {item?.parsed_cv.certifications?.length > 0 ? (
-                  <span className='text-sm text-gray-500'>
+                  <span className="text-sm text-gray-500">
                     {item.parsed_cv.certifications[0].certification_name}
                   </span>
                 ) : (
-                  <span className='text-sm text-red-700'>
+                  <span className="text-sm text-red-700">
                     Certification details not available
                   </span>
                 )}
               </div>
 
-              <div className=''>
-                <h1 className='font-bold text-base mt-5'>Skills</h1>
-                <div className='flex flex-col gap-2 justify-center'>
-                  <div className='flex space-x-2'>
+              <div className="">
+                <h1 className="font-bold text-base mt-5">Skills</h1>
+                <div className="flex flex-col gap-2 justify-center">
+                  <div className="flex space-x-2">
                     {item?.parsed_cv.skills
                       ?.slice(0, 3)
                       .map((skill: any, index: number) => (
                         <Card
                           key={index}
-                          className=' h-fit w-fit p-2 bg-slate-100 shadow-4xl rounded-lg text-sm overflow-hidden whitespace-nowrap text-ellipsis'
+                          className=" h-fit w-fit p-2 bg-slate-100 shadow-4xl rounded-lg text-sm overflow-hidden whitespace-nowrap text-ellipsis"
                           title={skill}
                         >
                           {skill}
                         </Card>
                       ))}
                   </div>
-                  <div className='text-sm text-gray-500 hover:cursor-pointer'>
+                  <div className="text-sm text-gray-500 hover:cursor-pointer">
                     {item?.parsed_cv.skills?.length > 3 && (
                       <span>...{item.parsed_cv.skills.length - 3} more</span>
                     )}
@@ -332,18 +336,17 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                 </div>
               </div>
 
-              <div className='flex self-end'>
-                <Button
-                  className='rounded-3xl'
-                  onClick={() => router.push(`/cv-detail/${item._id}`)}
-                >
-                  View CV
+              <div className="flex self-end">
+                <Button className="rounded-3xl">
+                  <Link href={`/cv-detail/${item._id}`} target="_blank">
+                    View CV
+                  </Link>
                 </Button>
               </div>
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <div className="cursor-pointer absolute right-2 text-2xl text-red-700 hover:scale-125 ease-in-out ">
+                  <div className="cursor-pointer absolute right-2 text-2xl text-red-700 hover:scale-125 ease-in-out transition duration-500 ">
                     <MdDeleteForever />
                   </div>
                 </AlertDialogTrigger>
