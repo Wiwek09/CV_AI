@@ -1,13 +1,20 @@
 "use client";
-import React, { ChangeEvent, DragEvent, useState, useContext } from "react";
+import React, {
+  ChangeEvent,
+  DragEvent,
+  useState,
+  useContext,
+  useEffect,
+} from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import axios from "../../../utils/axiosConfig";
 import { ApiDataContext } from "../context/ApiDataContext";
 import { IoIosCloudUpload } from "react-icons/io";
-
+import FolderCreation from "./FolderCreation";
+import FolderList from "./FolderList";
+// import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +27,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import axiosInstance from "../../../utils/axiosConfig";
+
 const SideNavBar = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const { toast } = useToast();
@@ -27,6 +45,24 @@ const SideNavBar = () => {
   const apiData = context?.apiData ?? null;
   const setApiData = context?.setApiData;
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [updateFolderList, setUpdateFolderList] = useState(false);
+  const [folderListData, setFolderListData] = useState<string[]>([]);
+
+  const handleFolderCreated = () => {
+    setUpdateFolderList((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const folderList = async () => {
+      try {
+        const response = await axiosInstance.get("/folder/getAllFolders");
+        setFolderListData(response.data);
+      } catch (error) {
+        console.error("Erro fetching Data:", error);
+      }
+    };
+    folderList();
+  }, [updateFolderList]);
 
   const handleFileUpload = async (files: FileList) => {
     if (!files || files.length === 0) return;
@@ -39,9 +75,13 @@ const SideNavBar = () => {
     setUploading(true);
 
     try {
-      const response = await axios.post("/document/document", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axiosInstance.post(
+        "/document/document",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       if (response.status === 200) {
         toast({
@@ -72,7 +112,7 @@ const SideNavBar = () => {
 
   const fetchUpdatedApiData = async () => {
     try {
-      const response = await axios.get("/document/all_document");
+      const response = await axiosInstance.get("/document/all_document");
       if (setApiData) {
         setApiData(response.data);
       } else {
@@ -85,7 +125,7 @@ const SideNavBar = () => {
 
   const deleteAllCV = async () => {
     try {
-      const response = await axios.delete(`/document/all_document`);
+      const response = await axiosInstance.delete(`/document/all_document`);
       if (response.status === 200 && apiData && apiData?.length > 0) {
         setApiData([]);
         toast({
@@ -143,7 +183,26 @@ const SideNavBar = () => {
 
   return (
     <Card className="border border-black h-[100vh] rounded-none flex flex-col items-center bg-black space-y-6 py-6">
-      <h1 className="text-2xl text-center w-full px-4 text-white">CVAI</h1>
+      <h1 className="text-2xl text-center w-full px-4 text-white">CV_AI</h1>
+
+      <div>
+        <Select>
+          <SelectTrigger className="w-[180px]  ">
+            <SelectValue placeholder="Select folder to upload" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {folderListData.map((item: any, index) => (
+                <div key={index} className="">
+                  <SelectItem value={item.folder_id}>
+                    {item.folder_name}
+                  </SelectItem>
+                </div>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="w-full max-w-sm px-4">
         <div
           onDrop={handleDrop}
@@ -185,7 +244,7 @@ const SideNavBar = () => {
               <p className="text-center">Drag and drop your files here</p>
               <label
                 onClick={(e) => e.stopPropagation()}
-                className="px-4 flex items-center w-44 justify-center py-4 rounded-md gap-2 cursor-pointer bg-black text-white group"
+                className="cursor-pointer"
               >
                 <span>Choose File</span>
                 <input
@@ -202,17 +261,25 @@ const SideNavBar = () => {
         </div>
       </div>
 
-      <h1 className="text-start w-full px-4 text-xl font-medium text-white">
+      {/* <h1 className="text-start w-full px-4 text-xl font-medium text-white">
         Files Uploaded
-      </h1>
+      </h1> */}
 
-      <div className="flex flex-col w-full items-start px-4 overflow-y-auto scrollbar-thin h-52 gap-2 max-w-sm">
+      {/* <div className="flex flex-col w-full items-start px-4 overflow-y-auto scrollbar-thin h-52 gap-2 max-w-sm">
         {apiData &&
           apiData.map((item: any, index: number) => (
             <span key={index} className="text-gray-300 text-sm">
               {index + 1 + ". " + item.doc_name}
             </span>
           ))}
+      </div> */}
+
+      <div className="w-full px-4">
+        <FolderCreation onFolderCreated={handleFolderCreated} />
+      </div>
+
+      <div className="w-full px-4">
+        <FolderList updateFolderList={updateFolderList} />
       </div>
 
       <div>

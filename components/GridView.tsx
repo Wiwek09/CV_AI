@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect, useContext } from "react";
-import axios from "@/utils/axiosConfig";
 import Image from "next/image";
 import { ViewContext } from "@/app/dashboard/context/ViewContext";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { IDocumentData } from "@/interfaces/DocumentData";
 import Link from "next/link";
+import axiosInstance from "@/utils/axiosConfig";
 
 interface GridViewProps {
   data: IDocumentData[];
@@ -47,7 +47,7 @@ function GridView({ data, searchData }: GridViewProps) {
 
   const getFullImageData = async (searchData: IFormInputData) => {
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `/document/search_by_query`,
         searchData,
         {
