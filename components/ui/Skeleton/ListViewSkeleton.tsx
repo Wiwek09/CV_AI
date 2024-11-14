@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "../card";
 
-const ListViewSkeletion = () => {
+const ListViewSkeleton = () => {
   return (
     <Card
       key="skeleton"
@@ -57,4 +57,4 @@ const ListViewSkeletion = () => {
   );
 };
 
-export default ListViewSkeletion;
+export default ListViewSkeleton;
