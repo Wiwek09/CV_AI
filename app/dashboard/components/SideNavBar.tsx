@@ -14,7 +14,6 @@ import { ApiDataContext } from "../context/ApiDataContext";
 import { IoIosCloudUpload } from "react-icons/io";
 import FolderCreation from "./FolderCreation";
 import FolderList from "./FolderList";
-// import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +31,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -47,6 +45,7 @@ const SideNavBar = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [updateFolderList, setUpdateFolderList] = useState(false);
   const [folderListData, setFolderListData] = useState<string[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
   const handleFolderCreated = () => {
     setUpdateFolderList((prev) => !prev);
@@ -75,21 +74,33 @@ const SideNavBar = () => {
     setUploading(true);
 
     try {
+      if (!selectedFolderId) {
+        toast({
+          title: "Folder Not Selected",
+          description: "Please select a folder before uploading files.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const response = await axiosInstance.post(
-        "/document/document",
+        `/document/document?folder_id=${selectedFolderId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
       if (response.status === 200) {
+        const selectedFolder = folderListData.find(
+          (folder: any) => folder.folder_id === selectedFolderId
+        );
         toast({
           title: "Upload Successful",
-          description: "Your files have been uploaded successfully.",
+          description: `Your files have been uploaded to the folder "${selectedFolder?.folder_name}".`,
           action: <ToastAction altText="OK">OK</ToastAction>,
           className: "bg-[#7bf772]",
         });
+        // console.log("Data uploaded",)
         await fetchUpdatedApiData();
       } else {
         toast({
@@ -186,7 +197,7 @@ const SideNavBar = () => {
       <h1 className="text-2xl text-center w-full px-4 text-white">CV_AI</h1>
 
       <div>
-        <Select>
+        <Select onValueChange={(value) => setSelectedFolderId(value)}>
           <SelectTrigger className="w-[180px]  ">
             <SelectValue placeholder="Select folder to upload" />
           </SelectTrigger>
