@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import ListViewSkeletion from "./ui/Skeleton/ListViewSkeletion";
+import ListViewSkeletion from "./ui/Skeleton/ListViewSkeleton";
 
 interface ListViewProps {
   data: IDocumentData[] | any;
