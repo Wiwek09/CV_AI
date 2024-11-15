@@ -14,6 +14,7 @@ import { ApiDataContext } from "../context/ApiDataContext";
 import { IoIosCloudUpload } from "react-icons/io";
 import FolderCreation from "./FolderCreation";
 import FolderList from "./FolderList";
+import { IFolderData } from "@/interfaces/FolderData";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +45,7 @@ const SideNavBar = () => {
   const setApiData = context?.setApiData;
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [updateFolderList, setUpdateFolderList] = useState(false);
-  const [folderListData, setFolderListData] = useState<string[]>([]);
+  const [folderListData, setFolderListData] = useState<IFolderData[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
   const handleFolderCreated = () => {
@@ -92,7 +93,7 @@ const SideNavBar = () => {
       );
       if (response.status === 200) {
         const selectedFolder = folderListData.find(
-          (folder: any) => folder.folder_id === selectedFolderId
+          (folder) => folder.folder_id === selectedFolderId
         );
         toast({
           title: "Upload Successful",
