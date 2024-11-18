@@ -10,9 +10,8 @@ import { IDocumentData } from "@/interfaces/DocumentData";
 import axios from "@/utils/axiosConfig";
 import Link from "next/link";
 import { IFormInputData } from "@/interfaces/FormInputData";
-import { MdDeleteForever } from "react-icons/md";
+import { RxCross2 } from "react-icons/rx";
 import { useToast } from "@/hooks/use-toast";
-// import { ViewContext } from "@/app/dashboard/context/ViewContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,14 +30,9 @@ interface ListViewProps {
 }
 
 const ListView = ({ data, searchData }: ListViewProps) => {
-  // const context = useContext(ViewContext);
-
-  // const { view } = context;
-
   const [allData, setAllData] = useState<any>([]);
   const [searchResults, setSearchResults] = useState<any>([]);
   const [isSearching, setIsSearching] = useState(false);
-  // const [erroData, setErrorData] = useState(false);
 
   const { toast } = useToast();
 
@@ -59,8 +53,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
             break;
           }
         }
-        setAllData(fetchedData); // Update with successfully fetched data
-        // setErrorData(false);
+        setAllData(fetchedData);
       }
     } catch (error) {
       // setErrorData(true);
@@ -147,7 +140,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
     isSearching && searchResults.length > 0 ? searchResults : allData;
 
   return (
-    <div className="flex flex-col px-4 py-4 rounded-md bg-gray-100  h-[100vh] overflow-y-scroll space-y-5 scrollbar-thin ">
+    <div className="flex flex-col px-4 py-4 rounded-md bg-gray-100 h-[100vh] overflow-y-scroll space-y-5 scrollbar-thin ">
       {displayedData?.length === 0 ? (
         <p>No Document Available</p>
       ) : (
@@ -347,7 +340,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <div className="cursor-pointer absolute right-2 text-2xl text-red-700 hover:scale-125 ease-in-out transition duration-500 ">
-                    <MdDeleteForever />
+                    <RxCross2 />
                   </div>
                 </AlertDialogTrigger>
                 <AlertDialogContent>

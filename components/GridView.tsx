@@ -38,7 +38,7 @@ function GridView({ data, searchData }: GridViewProps) {
     } else {
       setImageDataID([]);
     }
-  }, [searchData, contextValue?.view]);
+  }, [searchData]);
 
   // useEffect(() => {
   //   if (imageDataID?.length > 0) {
@@ -91,23 +91,20 @@ function GridView({ data, searchData }: GridViewProps) {
     <div className="masonry-container bg-gray-100">
       {!searchData && data?.length > 0 ? (
         data?.map((item: any, index) => (
-          <div
-            key={item.doc_id}
-            className="masonry-item relative group cursor-pointer"
-          >
+          <div key={item.doc_id} className="mb-6 cursor-pointer">
             <Link href={`/cv-detail/${item.doc_id}`} target="_blank">
               <Image
                 src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/cv_images/${item.image_id}.webp`}
                 alt={`Image ${index + 1}`}
-                height={200}
-                width={300}
-                className="rounded-lg object-cover shadow-lg w-full h-auto"
+                height={500}
+                width={700}
+                className="rounded-lg object-cover shadow-lg w-full"
                 loading="lazy"
                 layout="responsive"
               />
 
               {/* Overlay that appears on hover */}
-              <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex items-center justify-center">
+              {/* <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex items-center justify-center">
                 <div className="text-white text-center p-4">
                   <h3 className="text-lg font-semibold mb-2">Overview</h3>
                   {loading ? (
@@ -120,7 +117,7 @@ function GridView({ data, searchData }: GridViewProps) {
                     <p className="text-sm">{item.doc_name}</p>
                   )}
                 </div>
-              </div>
+              </div> */}
             </Link>
           </div>
         ))
@@ -129,26 +126,26 @@ function GridView({ data, searchData }: GridViewProps) {
           <div
             key={index}
             // onClick={() => router.push(`/cv-detail/${item.doc_id}`)}
-            className="masonry-item relative group cursor-pointer"
+            className="mb-6 cursor-pointer"
           >
             <Link href={`/cv-detail/${item.doc_id}`} target="_blank">
               <Image
                 src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/cv_images/${item.img_id}.webp`}
                 alt={`Image ${index + 1}`}
-                height={200}
-                width={300}
+                height={500}
+                width={700}
                 className="rounded-lg object-cover shadow-lg w-full h-auto"
                 loading="lazy"
                 layout="responsive"
               />
 
               {/* Overlay that appears on hover */}
-              <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex justify-center">
+              {/* <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex justify-center">
                 <div className="text-white text-center p-4">
                   <h3 className="text-lg font-bold mb-2">Overview</h3>
                   <p className="text-sm">{item.skill_summary}</p>
                 </div>
-              </div>
+              </div> */}
             </Link>
           </div>
         ))
