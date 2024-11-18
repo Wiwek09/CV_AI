@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useState, useEffect, ReactNode } from "react";
-import axios from "@/utils/axiosConfig";
 import { IDocumentData } from "@/interfaces/DocumentData";
+import axiosInstance from "@/utils/axiosConfig";
 
 // Define the context value structure
 interface ApiDataContextType {
@@ -19,7 +19,7 @@ export const ApiDataProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/document/all_document");
+        const response = await axiosInstance.get("/document/all_document");
         setApiData(response.data);
       } catch (error) {
         console.error("Error fetching API data:", error);

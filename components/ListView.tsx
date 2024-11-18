@@ -7,7 +7,7 @@ import { IoLocation } from "react-icons/io5";
 import { GoDotFill } from "react-icons/go";
 import { Button } from "./ui/button";
 import { IDocumentData } from "@/interfaces/DocumentData";
-import axios from "@/utils/axiosConfig";
+import axiosInstance from "@/utils/axiosConfig";
 import Link from "next/link";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { RxCross2 } from "react-icons/rx";
@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import ListViewSkeletion from "./ui/Skeleton/ListViewSkeleton";
 
 interface ListViewProps {
   data: IDocumentData[] | any;
@@ -33,17 +34,21 @@ const ListView = ({ data, searchData }: ListViewProps) => {
   const [allData, setAllData] = useState<any>([]);
   const [searchResults, setSearchResults] = useState<any>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { toast } = useToast();
 
   const fetchAllData = async () => {
     const fetchedData: any[] = [];
+    setLoading(true);
 
     try {
       if (data.length > 0) {
         for (const item of data) {
           try {
-            const response = await axios.get(`/document/cv/${item.doc_id}`);
+            const response = await axiosInstance.get(
+              `/document/cv/${item.doc_id}`
+            );
             if (response.status === 200) {
               fetchedData.push(response.data);
             }
@@ -58,6 +63,8 @@ const ListView = ({ data, searchData }: ListViewProps) => {
     } catch (error) {
       // setErrorData(true);
       console.error("General error in fetching data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,7 +84,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
   const fetchSearchData = async (searchData: IFormInputData) => {
     // setLoading(true);
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `/document/search_by_query`,
         searchData,
         {
@@ -91,7 +98,9 @@ const ListView = ({ data, searchData }: ListViewProps) => {
         const searchIds = response.data;
         const fetchedData = await Promise.all(
           searchIds?.map(async (item: any) => {
-            const response = await axios.get(`/document/cv/${item.doc_id}`);
+            const response = await axiosInstance.get(
+              `/document/cv/${item.doc_id}`
+            );
             return response.data;
           })
         );
@@ -99,12 +108,14 @@ const ListView = ({ data, searchData }: ListViewProps) => {
       }
     } catch (error) {
       console.log("Error fetching", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const deleteCV = async (id: string) => {
     try {
-      const response = await axios.delete(`/document/document/${id}`);
+      const response = await axiosInstance.delete(`/document/document/${id}`);
       if (response.status === 200) {
         // Filter out the deleted document
         setAllData((prevData: any) =>
@@ -141,7 +152,12 @@ const ListView = ({ data, searchData }: ListViewProps) => {
 
   return (
     <div className="flex flex-col px-4 py-4 rounded-md bg-gray-100 h-[100vh] overflow-y-scroll space-y-5 scrollbar-thin ">
-      {displayedData?.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col gap-3">
+          <ListViewSkeletion />
+          <ListViewSkeletion />
+        </div>
+      ) : displayedData?.length === 0 ? (
         <p>No Document Available</p>
       ) : (
         displayedData?.map((item: any) => (

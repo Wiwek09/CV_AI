@@ -1,9 +1,8 @@
 "use client";
 import React, { useState, useContext } from "react";
 import { Input } from "@/components/ui/input";
-import { ImLocation } from "react-icons/im";
+// import { ImLocation } from "react-icons/im";
 import { FaSearch } from "react-icons/fa";
-
 import TagsInput from "./TagsInput";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { SearchContext } from "../context/SearchContext";
@@ -48,12 +47,6 @@ const SearchFields = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Submit search data based on current view
-    // if (view === "list") {
-    //   setListViewSearchData(formData);
-    // } else if (view === "grid") {
-    //   setGridViewSearchData(formData);
-    // }
 
     setSearchData(formData);
     // Clear the form fields after submission
@@ -89,7 +82,7 @@ const SearchFields = () => {
       skill: tags,
     });
   };
-  const [isFocused, setIsFocused] = useState(false);
+  // const [isFocused, setIsFocused] = useState(false);
 
   // Disable Enter key for input fields to prevent submission
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -105,6 +98,7 @@ const SearchFields = () => {
         <div className="flex gap-3 justify-between text-center">
           <div>
             <Input
+              className="w-[20rem]"
               type="string"
               name="prompt"
               value={formData.prompt}
@@ -143,27 +137,23 @@ const SearchFields = () => {
           </div>
 
           <div className="flex flex-shrink-0 ">
-            <div
-              className={` flex items-center border rounded-lg ${
-                isFocused ? "pr-0" : "pr-3"
-              }`}
-            >
+            <div className="flex items-center border rounded-lg">
               <Input
-                className="max-h-12 border-none"
+                className="w-[12rem] border-none"
                 type="text"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
                 placeholder="Location"
                 onKeyDown={handleKeyDown}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                // onFocus={() => setIsFocused(true)}
+                // onBlur={() => setIsFocused(false)}
               />
-              {!isFocused && <ImLocation className="" />}
+              {/* {!isFocused && <ImLocation className="" />} */}
             </div>
             <Button
               type="submit"
-              className=" bg-white ml-5 rounded-3xl group hover:bg-inherit"
+              className=" bg-white ml-2 rounded-3xl group hover:bg-inherit"
             >
               <span className="transform transition-transform duration-300 ease-in-out group-hover:translate-y-[-3px]">
                 <FaSearch className="text-black" />
@@ -184,25 +174,27 @@ const SearchFields = () => {
         <hr className='bg-slate-200 mt-3 h-[1px]' />
       </div> */}
 
-      <div className="">
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
+      <div className="flex items-center ">
+        <div className="font-semibold">
+          <p>Availability : &nbsp;</p>
+        </div>
 
-          <SelectContent className="w-[180px]">
-            <SelectGroup>
-              <SelectItem value="recent">Recent</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="random">Random</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="">
+          <Select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+
+            <SelectContent className="w-[180px]">
+              <SelectGroup>
+                <SelectItem value="recent">Recent</SelectItem>
+                <SelectItem value="oldest">Oldest</SelectItem>
+                <SelectItem value="random">Random</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-
-      {/* <div>
-        <hr className="bg-slate-500 h-1" />
-      </div> */}
     </div>
   );
 };
