@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect, useContext } from "react";
-import axios from "@/utils/axiosConfig";
 import Image from "next/image";
-import { ViewContext } from "@/app/dashboard/context/ViewContext";
+// import { ViewContext } from "@/app/dashboard/context/ViewContext";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { IDocumentData } from "@/interfaces/DocumentData";
 import Link from "next/link";
+import axiosInstance from "@/utils/axiosConfig";
+import GridViewSkeleton from "./ui/Skeleton/GridViewSkeleton";
 
 interface GridViewProps {
   data: IDocumentData[];
@@ -14,8 +15,8 @@ interface GridViewProps {
 
 function GridView({ data, searchData }: GridViewProps) {
   const [imageDataID, setImageDataID] = useState<any[]>();
-  const contextValue = useContext(ViewContext);
-  const [loading, setLoading] = useState(false);
+  // const contextValue = useContext(ViewContext);
+  const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
   //   const storedSearchData = sessionStorage.getItem("searchData");
@@ -31,12 +32,23 @@ function GridView({ data, searchData }: GridViewProps) {
   //   }
   // }, [data, searchData]);
 
+  // Trigger loading state based on `data`
+  useEffect(() => {
+    if (data?.length > 0) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [data]);
+
   // Handle search data and view changes
   useEffect(() => {
-    if (searchData !== null) {
+    if (searchData) {
+      setLoading(true);
       getFullImageData(searchData);
-    } else {
+    } else if (data?.length === 0) {
       setImageDataID([]);
+      setLoading(false);
     }
   }, [searchData]);
 
@@ -47,7 +59,7 @@ function GridView({ data, searchData }: GridViewProps) {
 
   const getFullImageData = async (searchData: IFormInputData) => {
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `/document/search_by_query`,
         searchData,
         {
@@ -87,9 +99,19 @@ function GridView({ data, searchData }: GridViewProps) {
   //   // }
   // };
 
+  // if(data?.length){
+  //   setLoading(false);
+  // }
+
   return (
     <div className="masonry-container bg-gray-100">
-      {!searchData && data?.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-between items-center ">
+          <GridViewSkeleton />
+          <GridViewSkeleton />
+          <GridViewSkeleton />
+        </div>
+      ) :  data?.length > 0 ? (
         data?.map((item: any, index) => (
           <div key={item.doc_id} className="mb-6 cursor-pointer">
             <Link href={`/cv-detail/${item.doc_id}`} target="_blank">
