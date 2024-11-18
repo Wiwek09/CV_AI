@@ -58,7 +58,7 @@ const SideNavBar = () => {
         const response = await axiosInstance.get("/folder/getAllFolders");
         setFolderListData(response.data);
       } catch (error) {
-        console.error("Erro fetching Data:", error);
+        console.error("Error fetching Data:", error);
       }
     };
     folderList();
@@ -95,6 +95,7 @@ const SideNavBar = () => {
         const selectedFolder = folderListData.find(
           (folder) => folder.folder_id === selectedFolderId
         );
+        setUpdateFolderList((prev) => !prev);
         toast({
           title: "Upload Successful",
           description: `Your files have been uploaded to the folder "${selectedFolder?.folder_name}".`,
@@ -221,7 +222,7 @@ const SideNavBar = () => {
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
-          className={`relative flex flex-col gap-2 items-center justify-center h-52 w-full border-2 border-dashed border-gray-400 p-4 rounded-md cursor-pointer bg-black text-white transition-all duration-300 ease-in-out ${
+          className={`relative flex flex-col gap-2 items-center justify-center h-52 w-full border-2 border-dashed border-gray-400 p-4 rounded-md  bg-black text-white transition-all duration-300 ease-in-out ${
             isDragging ? "opacity-50 backdrop-blur-sm" : "opacity-100"
           }`}
         >
@@ -255,7 +256,7 @@ const SideNavBar = () => {
               <IoIosCloudUpload size={40} className="text-gray-400" />
               <p className="text-center">Drag and drop your files here</p>
               <label
-                onClick={(e) => e.stopPropagation()}
+                // onClick={(e) => e.stopPropagation()}
                 className="cursor-pointer"
               >
                 <span>Choose File</span>
