@@ -87,17 +87,12 @@
 /* Container styles */
 .masonry-container {
   column-count: 3;
-  column-gap: 16px;
+  column-gap: 12px;
   padding: 16px;
-}
 
-/* .masonry-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  grid-auto-rows: 10px;
-  gap: 20px;
-  column-count: 3;
-} */
+  /* height: 100vh; */
+  /* overflow-y: auto; */
+}
 
 /* Image container styles */
 .masonry-item {
@@ -114,10 +109,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: auto;
   height: auto;
   display: block;
-  border-radius: 8px; /* Optional: rounded corners */
+  transition: transform 0.3s;
 }
 
 /* Responsive design */
@@ -133,7 +128,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 580px) {
   .masonry-container {
     column-count: 1;
   }

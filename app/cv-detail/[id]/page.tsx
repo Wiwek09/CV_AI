@@ -112,7 +112,7 @@ const CVDetailPage = ({ params }: { params: string }) => {
         </div>
 
         {/* Second Part (Scrollable) */}
-        <div className="flex-grow overflow-y-auto scrollbar-thin">
+        <div className="flex-grow flex-col space-y-3 overflow-y-auto scrollbar-thin">
           {/* Experience */}
           <div className="flex flex-col gap-2">
             <p className="font-semibold text-xl flex gap-4 ">

@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, FormEvent, useState, useContext } from "react";
+import React, { ChangeEvent, DragEvent, useState, useContext } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -21,31 +21,15 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const SideNavBar = () => {
-  const [files, setFiles] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
-
   const { toast } = useToast();
   const context = useContext(ApiDataContext);
   const apiData = context?.apiData ?? null;
   const setApiData = context?.setApiData;
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setFiles(event.target.files);
-    }
-  };
-
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-
-    if (!files || files.length === 0) {
-      toast({
-        variant: "destructive",
-        title: "File not selected",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-      });
-      return;
-    }
+  const handleFileUpload = async (files: FileList) => {
+    if (!files || files.length === 0) return;
 
     const formData = new FormData();
     Array.from(files).forEach((file) => {
@@ -56,9 +40,7 @@ const SideNavBar = () => {
 
     try {
       const response = await axios.post("/document/document", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.status === 200) {
@@ -68,19 +50,21 @@ const SideNavBar = () => {
           action: <ToastAction altText="OK">OK</ToastAction>,
           className: "bg-[#7bf772]",
         });
-
-        // Fetch updated data after successful upload
         await fetchUpdatedApiData();
-
-        // Reset form and files
-        setFiles(null);
-        (event.target as HTMLFormElement).reset();
       } else {
-        alert("Upload failed");
+        toast({
+          title: "Upload failed",
+          variant: "destructive",
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
       }
     } catch (error) {
-      console.log("Error uploading files:", error);
-      alert("An error occurred during file upload");
+      console.error("Error uploading files:", error);
+      toast({
+        title: "Error",
+        variant: "destructive",
+        description: "An error occurred during file upload.",
+      });
     } finally {
       setUploading(false);
     }
@@ -102,7 +86,6 @@ const SideNavBar = () => {
   const deleteAllCV = async () => {
     try {
       const response = await axios.delete(`/document/all_document`);
-
       if (response.status === 200 && apiData && apiData?.length > 0) {
         setApiData([]);
         toast({
@@ -127,44 +110,86 @@ const SideNavBar = () => {
     }
   };
 
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) handleFileUpload(event.target.files);
+  };
+
+  const handleDragEnter = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
+    if (event.dataTransfer.files) {
+      handleFileUpload(event.dataTransfer.files);
+    }
+  };
+
   return (
-    <Card className="border border-black h-[145vh]rounded-none flex flex-col items-center bg-black space-y-6 py-6  ">
-      <div className="">
-        {/* <h1 className='text-center mb-10 text-xl font-bold'>Cv-Upload</h1> */}
-        {/* <Image
-          className='object-cover h-10 w-12 rounded-3xl '
-          src={'/assets/8008657.jpg'}
-          alt='Logo'
-          height={50}
-          width={50}
-        /> */}
-        <h1 className="text-2xl mt-5 text-center w-full px-4 text-white mb-2">
-          CVAI
-        </h1>
-        <div>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-2 items-center justify-between h-52"
-          >
-            {/* <div className='flex-grow items-center gap-2  max-w-full overflow-hidden'>
-                <IoIosCloudUpload className='flex-shrink-0' />
-                <input
-                  className='file-input flex-wrap'
-                  type='file'
-                  accept='application/pdf'
-                  onChange={handleFileSelect}
-                  multiple
-                  disabled={uploading}
-                />
-              </div> */}
-            <div className="flex justify-center w-full  overflow-hidden">
-              <label className="px-4 flex items-center w-44 justify-center py-4 rounded-md gap-2 cursor-pointer border-2  border-dashed p-2 bg-black text-white group">
-                <span className="transform transition-transform duration-300 ease-in-out group-hover:translate-y-[-3px]">
-                  <IoIosCloudUpload className="flex-shrink-0" />
-                </span>
+    <Card className="border border-black h-[100vh] rounded-none flex flex-col items-center bg-black space-y-6 py-6">
+      <h1 className="text-2xl text-center w-full px-4 text-white">CVAI</h1>
+      <div className="w-full max-w-sm px-4">
+        <div
+          onDrop={handleDrop}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          className={`relative flex flex-col gap-2 items-center justify-center h-52 w-full border-2 border-dashed border-gray-400 p-4 rounded-md cursor-pointer bg-black text-white transition-all duration-300 ease-in-out ${
+            isDragging ? "opacity-50 backdrop-blur-sm" : "opacity-100"
+          }`}
+        >
+          {uploading ? (
+            <div className="absolute inset-0 flex h-full w-full flex-col items-center justify-center pointer-events-none bg-black bg-opacity-50 ">
+              {/* Loader for uploading state */}
+              <svg
+                className="animate-spin h-10 w-10 text-gray-300"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                ></path>
+              </svg>
+              <p className="text-gray-400 mt-2">Uploading...</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center h-full w-full justify-center">
+              <IoIosCloudUpload size={40} className="text-gray-400" />
+              <p className="text-center">Drag and drop your files here</p>
+              <label
+                onClick={(e) => e.stopPropagation()}
+                className="px-4 flex items-center w-44 justify-center py-4 rounded-md gap-2 cursor-pointer bg-black text-white group"
+              >
                 <span>Choose File</span>
                 <input
-                  className="hidden "
+                  className="hidden"
                   type="file"
                   accept="application/pdf"
                   onChange={handleFileSelect}
@@ -173,60 +198,7 @@ const SideNavBar = () => {
                 />
               </label>
             </div>
-
-            {/* Display selected file names */}
-            {files && (
-              <div className="mx-2 overflow-y-auto scrollbar-thin">
-                <ul className="space-y-1">
-                  {Array.from(files).map((file, index) => (
-                    <li
-                      key={index}
-                      className="text-sm truncate max-w-xs text-gray-700"
-                      title={file.name}
-                    >
-                      {file.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="flex justify-start">
-              <Button
-                className="rounded-3xl bg-black border-white border "
-                type="submit"
-                disabled={uploading}
-              >
-                {uploading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <span>Uploading...</span>
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      ></path>
-                    </svg>
-                  </div>
-                ) : (
-                  "Submit"
-                )}
-              </Button>
-            </div>
-          </form>
+          )}
         </div>
       </div>
 
@@ -234,19 +206,16 @@ const SideNavBar = () => {
         Files Uploaded
       </h1>
 
-      {/* Display uploaded files */}
       <div className="flex flex-col w-full items-start px-4 overflow-y-auto scrollbar-thin h-52 gap-2 max-w-sm">
         {apiData &&
           apiData.map((item: any, index: number) => (
             <span key={index} className="text-gray-300 text-sm">
-              {index + 1 + "." + item.doc_name}
+              {index + 1 + ". " + item.doc_name}
             </span>
           ))}
       </div>
 
-      {/* Delete All */}
-
-      <div className="">
+      <div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button className="bg-red-500 hover:bg-red-800">Delete All</Button>
@@ -256,14 +225,14 @@ const SideNavBar = () => {
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete all
-                your uploaded file !!!
+                your uploaded files.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-red-700 hover:bg-red-500"
-                onClick={() => deleteAllCV()}
+                onClick={deleteAllCV}
               >
                 Continue
               </AlertDialogAction>
