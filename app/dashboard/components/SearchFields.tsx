@@ -41,6 +41,7 @@ const SearchFields = () => {
     programming_language: [""],
     skill: [""],
     address: "",
+    foldersToSearch: [""],
   });
 
   const [tagsValue, setTagsValue] = useState(true);
@@ -55,6 +56,7 @@ const SearchFields = () => {
       programming_language: [""],
       skill: [""],
       address: "",
+      foldersToSearch: [""],
     });
     setTagsValue(false);
   };
