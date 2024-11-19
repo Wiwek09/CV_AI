@@ -7,7 +7,7 @@ import React, {
   useEffect,
 } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { ApiDataContext } from "../context/ApiDataContext";
@@ -15,17 +15,17 @@ import { IoIosCloudUpload } from "react-icons/io";
 import FolderCreation from "./FolderCreation";
 import FolderList from "./FolderList";
 import { IFolderData } from "@/interfaces/FolderData";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+//   AlertDialogTrigger,
+// } from "@/components/ui/alert-dialog";
 
 import {
   Select,
@@ -41,7 +41,7 @@ const SideNavBar = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const { toast } = useToast();
   const context = useContext(ApiDataContext);
-  const apiData = context?.apiData ?? null;
+  // const apiData = context?.apiData ?? null;
   const setApiData = context?.setApiData;
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [updateFolderList, setUpdateFolderList] = useState(false);
