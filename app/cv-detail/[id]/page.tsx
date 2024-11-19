@@ -14,7 +14,7 @@ const CVDetailPage = ({ params }: { params: string }) => {
 
   useEffect(() => {
     fetchFullCV();
-  }, [data]);
+  }, []);
 
   const fetchFullCV = async () => {
     try {
