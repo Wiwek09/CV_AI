@@ -3,4 +3,5 @@ export interface IFormInputData {
   programming_language: string[];
   skill: string[];
   address: string;
+  foldersToSearch: string[];
 }
