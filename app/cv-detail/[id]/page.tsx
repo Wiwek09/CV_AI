@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { GoDotFill } from "react-icons/go";
 import DetailViewSkeleton from "@/components/ui/Skeleton/DetailViewSkeleton";
-import axios from "@/utils/axiosConfig";
+import axiosInstance from "@/utils/axiosConfig";
 
 const CVDetailPage = ({ params }: { params: string }) => {
   const [data, setData] = useState<any>();
@@ -18,7 +18,7 @@ const CVDetailPage = ({ params }: { params: string }) => {
 
   const fetchFullCV = async () => {
     try {
-      const response = await axios.get(`/document/cv/${id}`);
+      const response = await axiosInstance.get(`/document/cv/${id}`);
       // console.log("Detail-CV", response.data.parsed_cv);
       setData(response.data.parsed_cv);
       setLoading(false);
