@@ -136,32 +136,32 @@ const SideNavBar = () => {
     }
   };
 
-  const deleteAllCV = async () => {
-    try {
-      const response = await axiosInstance.delete(`/document/all_document`);
-      if (response.status === 200 && apiData && apiData?.length > 0) {
-        setApiData([]);
-        toast({
-          title: "Deletion Successful",
-          description: "All files have been deleted successfully.",
-          className: "bg-[#7bf772]",
-        });
-      } else {
-        toast({
-          title: "No files",
-          variant: "destructive",
-          description: "Data is Empty",
-        });
-      }
-    } catch (error) {
-      console.error("Error Deleting Data", error);
-      toast({
-        variant: "destructive",
-        title: "An error occurred",
-        description: "Could not delete files.",
-      });
-    }
-  };
+  // const deleteAllCV = async () => {
+  //   try {
+  //     const response = await axiosInstance.delete(`/document/all_document`);
+  //     if (response.status === 200 && apiData && apiData?.length > 0) {
+  //       setApiData([]);
+  //       toast({
+  //         title: "Deletion Successful",
+  //         description: "All files have been deleted successfully.",
+  //         className: "bg-[#7bf772]",
+  //       });
+  //     } else {
+  //       toast({
+  //         title: "No files",
+  //         variant: "destructive",
+  //         description: "Data is Empty",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error Deleting Data", error);
+  //     toast({
+  //       variant: "destructive",
+  //       title: "An error occurred",
+  //       description: "Could not delete files.",
+  //     });
+  //   }
+  // };
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) handleFileUpload(event.target.files);
@@ -295,7 +295,7 @@ const SideNavBar = () => {
         <FolderList updateFolderList={updateFolderList} />
       </div>
 
-      <div>
+      {/* <div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button className="bg-red-500 hover:bg-red-800">Delete All</Button>
@@ -319,7 +319,7 @@ const SideNavBar = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
+      </div> */}
     </Card>
   );
 };
