@@ -8,14 +8,14 @@ import { IFormInputData } from "@/interfaces/FormInputData";
 import { SearchContext } from "../context/SearchContext";
 import { ViewContext } from "../context/ViewContext";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectGroup,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
 const SearchFields = () => {
@@ -176,7 +176,8 @@ const SearchFields = () => {
         <hr className='bg-slate-200 mt-3 h-[1px]' />
       </div> */}
 
-      <div className="flex items-center ">
+      {/* sorting search */}
+      {/* <div className="flex items-center ">
         <div className="font-semibold">
           <p>Availability : &nbsp;</p>
         </div>
@@ -196,7 +197,7 @@ const SearchFields = () => {
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
