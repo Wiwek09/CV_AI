@@ -174,14 +174,14 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                     : ""}
                 </h1>
                 <p className="flex items-center gap-2">
-                  <span className=" flex items-center ">
-                    <IoLocation className="text-base mr-2 " />
-                    <span className="text-gray-500 text-sm">
-                      {item?.parsed_cv.address
-                        ? item?.parsed_cv.address
-                        : "Not Given"}
+                  {item?.parsed_cv.address && (
+                    <span className=" flex items-center ">
+                      <IoLocation className="text-base mr-2 " />
+                      <span className="text-gray-500 text-sm">
+                        {item?.parsed_cv.address}
+                      </span>
                     </span>
-                  </span>
+                  )}
                 </p>
               </div>
 
@@ -193,54 +193,82 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                   {item?.parsed_cv.name}
                 </span>
               </p>
-              <p className="flex items-center gap-2">
-                <span>
-                  <FaPhoneAlt className="text-sm" />
-                </span>
-                <span className="text-gray-500 text-sm">
-                  {item?.parsed_cv.phone_number}
-                </span>
+              <p className="">
+                {item?.parsed_cv.phone_number && (
+                  <div className="flex item-center gap-2">
+                    <span>
+                      <FaPhoneAlt className="text-sm" />
+                    </span>
+                    <span className="text-gray-500 text-sm">
+                      {item?.parsed_cv.phone_number}
+                    </span>
+                  </div>
+                )}
               </p>
-              <p className="flex items-center gap-2">
-                <span>
-                  <MdEmail className="text-base" />
-                </span>
-                <span>
-                  <a
-                    href={`mailto:${item?.parsed_cv.email}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-500"
-                  >
-                    {item?.parsed_cv.email}
-                  </a>
-                </span>
+              <p className="">
+                {item?.parsed_cv.email && (
+                  <div className="flex items-center gap-2">
+                    <span>
+                      <MdEmail className="text-base" />
+                    </span>
+                    <span>
+                      <a
+                        href={`mailto:${item?.parsed_cv.email}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500"
+                      >
+                        {item?.parsed_cv.email}
+                      </a>
+                    </span>
+                  </div>
+                )}
               </p>
               <p className="flex gap-2">
-                <span>
-                  {item?.parsed_cv.linkedin_url &&
-                  item?.parsed_cv.linkedin_url !== null ? (
-                    <Link href={item.parsed_cv.linkedin_url} target="_blank">
-                      <FaLinkedin className="cursor-pointer" />
-                    </Link>
-                  ) : (
-                    ""
-                  )}
-                </span>
-                <span>
-                  {item?.parsed_cv.github_url &&
-                  item?.parsed_cv.github_url != null ? (
+                {item?.parsed_cv.linkedin_url && (
+                  <div>
                     <Link
-                      className="text-base"
-                      href={item?.parsed_cv.github_url}
+                      href={
+                        item.parsed_cv.linkedin_url.startsWith("http")
+                          ? item.parsed_cv.linkedin_url
+                          : `https://${item.parsed_cv.linkedin_url}`
+                      }
                       target="_blank"
+                      className="flex gap-2 "
                     >
-                      <FaGithub className="cursor-pointer" />
+                      <span>
+                        <FaLinkedin className="cursor-pointer" />
+                      </span>
+                      <span className="text-gray-500 text-sm">
+                        {item?.parsed_cv?.linkedin_url}
+                      </span>
                     </Link>
-                  ) : (
-                    ""
-                  )}
-                </span>
+                  </div>
+                )}
+              </p>
+
+              <p>
+                {item?.parsed_cv.github_url && (
+                  <div>
+                    <Link
+                      href={
+                        item?.parsed_cv.github_url.startsWith("http")
+                          ? item.parsed_cv.github_url
+                          : `https://${item.parsed_cv.github_url}`
+                      }
+                      target="_blank"
+                      className="flex gap-2"
+                    >
+                      <span>
+                        <FaGithub className="cursor-pointer" />
+                      </span>
+                      <span className="text-gray-500 text-sm">
+                        {item?.parsed_cv?.github_url}
+                      </span>
+                    </Link>
+                    )
+                  </div>
+                )}
               </p>
             </div>
 
@@ -255,7 +283,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                 </p>
               </div>
               <div className="flex flex-col">
-                <p className="font-semibold mb-3 text-sm">
+                <p className="font-semibold mb-3 ">
                   {item?.parsed_cv.work_experience?.length > 0
                     ? item?.parsed_cv.work_experience[0]?.job_title
                     : ""}
@@ -274,8 +302,8 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                       : ""}
                   </span>
                 </p>
-                <p className="flex gap-[5px] items-start justify-start">
-                  <span className="mt-[6px]">
+                <p className="flex gap-[5px] items-start justify-start text-sm ">
+                  <span className="mt-[2px] text-gray-800">
                     <GoDotFill />
                   </span>
                   <span className=" text-gray-500">
@@ -355,7 +383,7 @@ const ListView = ({ data, searchData }: ListViewProps) => {
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <div className="cursor-pointer absolute right-2 text-2xl text-red-700 hover:scale-125 ease-in-out transition duration-500 ">
+                  <div className="cursor-pointer absolute right-0 text-2xl text-red-700 hover:scale-125 ease-in-out transition duration-500 ">
                     <RxCross2 />
                   </div>
                 </AlertDialogTrigger>
