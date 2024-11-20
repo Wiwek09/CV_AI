@@ -14,7 +14,7 @@ interface GridViewProps {
 }
 
 function GridView({ data, searchData }: GridViewProps) {
-  const [imageDataID, setImageDataID] = useState<any[]>();
+  const [imageDataID, setImageDataID] = useState<any[]>([]);
   // const contextValue = useContext(ViewContext);
   const [loading, setLoading] = useState(true);
 
@@ -111,7 +111,7 @@ function GridView({ data, searchData }: GridViewProps) {
           <GridViewSkeleton />
           <GridViewSkeleton />
         </div>
-      ) :  data?.length > 0 ? (
+      ) : data?.length > 0 && imageDataID.length <= 0 ? (
         data?.map((item: any, index) => (
           <div key={item.doc_id} className="mb-6 cursor-pointer">
             <Link href={`/cv-detail/${item.doc_id}`} target="_blank">
