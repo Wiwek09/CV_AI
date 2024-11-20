@@ -198,24 +198,6 @@ const SideNavBar = () => {
     <Card className="border border-black h-[100vh] rounded-none flex flex-col items-center bg-black space-y-6 py-6">
       <h1 className="text-2xl text-center w-full px-4 text-white">CV_AI</h1>
 
-      <div>
-        <Select onValueChange={(value) => setSelectedFolderId(value)}>
-          <SelectTrigger className="w-[180px]  ">
-            <SelectValue placeholder="Select folder to upload" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {folderListData.map((item: any, index) => (
-                <div key={index} className="">
-                  <SelectItem value={item.folder_id}>
-                    {item.folder_name}
-                  </SelectItem>
-                </div>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
       <div className="w-full max-w-sm px-4">
         <div
           onDrop={handleDrop}
@@ -272,6 +254,25 @@ const SideNavBar = () => {
             </div>
           )}
         </div>
+      </div>
+
+      <div>
+        <Select onValueChange={(value) => setSelectedFolderId(value)}>
+          <SelectTrigger className="w-[180px]  ">
+            <SelectValue placeholder="Uploading to ...." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {folderListData.map((item: any, index) => (
+                <div key={index} className="">
+                  <SelectItem value={item.folder_id}>
+                    {item.folder_name}
+                  </SelectItem>
+                </div>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* <h1 className="text-start w-full px-4 text-xl font-medium text-white">
