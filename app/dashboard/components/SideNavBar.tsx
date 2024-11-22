@@ -15,19 +15,6 @@ import { IoIosCloudUpload } from "react-icons/io";
 import FolderCreation from "./FolderCreation";
 import FolderList from "./FolderList";
 import { IFolderData } from "@/interfaces/FolderData";
-<<<<<<< Updated upstream
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-=======
 
 // import {
 //   AlertDialog,
@@ -40,7 +27,6 @@ import {
 //   AlertDialogTitle,
 //   AlertDialogTrigger,
 // } from "@/components/ui/alert-dialog";
->>>>>>> Stashed changes
 
 import {
   Select,
@@ -291,8 +277,6 @@ const SideNavBar = () => {
         </div>
       </div>
 
-<<<<<<< Updated upstream
-=======
       <div className="w-full px-4">
         <Select onValueChange={(value) => setSelectedFolderId(value)}>
           <SelectTrigger className="w-full">
@@ -312,7 +296,6 @@ const SideNavBar = () => {
         </Select>
       </div>
 
->>>>>>> Stashed changes
       {/* <h1 className="text-start w-full px-4 text-xl font-medium text-white">
         Files Uploaded
       </h1> */}
@@ -334,7 +317,7 @@ const SideNavBar = () => {
         <FolderList updateFolderList={updateFolderList} />
       </div>
 
-      <div>
+      {/* <div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button className="bg-red-500 hover:bg-red-800">Delete All</Button>
@@ -358,7 +341,7 @@ const SideNavBar = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
+      </div> */}
     </Card>
   );
 };

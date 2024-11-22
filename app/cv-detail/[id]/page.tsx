@@ -9,7 +9,7 @@ import axios from "@/utils/axiosConfig";
 const CVDetailPage = ({ params }: { params: string }) => {
   const [data, setData] = useState<any>();
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
+  // const [error, setError] = useState<boolean>(false);
   const { id }: any = params;
   const pdfUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/cv/${id}.pdf`;
 
@@ -25,6 +25,7 @@ const CVDetailPage = ({ params }: { params: string }) => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching Data", error);
+      // setError(true);
       setLoading(false);
     }
   };
