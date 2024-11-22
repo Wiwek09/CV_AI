@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PiPlusCircleDuotone } from "react-icons/pi";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import {
@@ -58,8 +59,10 @@ function FolderCreation({ onFolderCreated }) {
 
   return (
     <div className="flex justify-between items-center">
-      <div className="text-lg font-semibold text-white">Folder</div>
-      <div>
+      <div className="text-lg font-semibold flex-1 text-white">Folder</div>
+
+      <div className="flex items-center gap-4">
+        {/* folder creation icon */}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <button aria-label="Add Folder" className="text-white">
@@ -98,6 +101,19 @@ function FolderCreation({ onFolderCreated }) {
                 </form>
               </div>
             </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* three dot icons */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button aria-label="options" className="text-white">
+              <BsThreeDotsVertical />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-22 flex flex-col gap-3 ">
+            <Button>Select All</Button>
+            <Button>Archieve</Button>
           </PopoverContent>
         </Popover>
       </div>

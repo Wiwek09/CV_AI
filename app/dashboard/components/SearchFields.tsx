@@ -3,10 +3,11 @@ import React, { useState, useContext } from "react";
 import { Input } from "@/components/ui/input";
 // import { ImLocation } from "react-icons/im";
 import { FaSearch } from "react-icons/fa";
-import TagsInput from "./TagsInput";
+import TagsInput from "./SearchInput/TagsInput";
 import { IFormInputData } from "@/interfaces/FormInputData";
 import { SearchContext } from "../context/SearchContext";
 import { ViewContext } from "../context/ViewContext";
+import LinearTagsInput from "./SearchInput/LinearTagsInput";
 
 // import {
 //   Select,
@@ -97,20 +98,21 @@ const SearchFields = () => {
     <div className="w-full mt-8 flex flex-col justify-center space-y-6">
       {/* Top search fields */}
       <form onSubmit={handleSubmit}>
-        <div className="flex gap-3 justify-between text-center">
-          <div>
-            <Input
-              className="w-[20rem]"
-              type="string"
-              name="prompt"
-              value={formData.prompt}
-              onChange={handleChange}
-              placeholder="Enter Prompt (skills)"
-              onKeyDown={handleKeyDown} // Prevent form submission on Enter key
-            />
-          </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-3 justify-between text-center">
+            <div>
+              <Input
+                className="w-[20rem]"
+                type="string"
+                name="prompt"
+                value={formData.prompt}
+                onChange={handleChange}
+                placeholder="Enter Prompt (skills)"
+                onKeyDown={handleKeyDown} // Prevent form submission on Enter key
+              />
+            </div>
 
-          {/* <div>
+            {/* <div>
             <Input
               type="text"
               name="programming_language"
@@ -120,48 +122,53 @@ const SearchFields = () => {
             />
           </div> */}
 
-          <div className="max-h-14">
-            {/* Inline tag input for programming languages */}
-            <TagsInput
-              onTagsChange={handleProgrammingLanguageTagsChange}
-              tagsValue={tagsValue}
-              placeholderText="Enter Programming Language"
-            />
-          </div>
-
-          {/* Tags Input for Skill */}
-          <div className="max-h-12">
-            <TagsInput
-              onTagsChange={handleSkillTagsChange}
-              tagsValue={tagsValue}
-              placeholderText="Enter Skill"
-            />
-          </div>
-
-          <div className="flex flex-shrink-0 ">
-            <div className="flex items-center border rounded-lg">
-              <Input
-                className="w-[12rem] border-none"
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Location"
-                onKeyDown={handleKeyDown}
-                // onFocus={() => setIsFocused(true)}
-                // onBlur={() => setIsFocused(false)}
+            <div className="max-h-14">
+              {/* Inline tag input for programming languages */}
+              <TagsInput
+                onTagsChange={handleProgrammingLanguageTagsChange}
+                tagsValue={tagsValue}
+                placeholderText="Enter Programming Language"
               />
-              {/* {!isFocused && <ImLocation className="" />} */}
             </div>
-            <Button
-              type="submit"
-              className=" bg-white ml-2 rounded-3xl group hover:bg-inherit"
-            >
-              <span className="transform transition-transform duration-300 ease-in-out group-hover:translate-y-[-3px]">
-                <FaSearch className="text-black" />
-              </span>
-              {/* <span>Search</span> */}
-            </Button>
+
+            {/* Tags Input for Skill */}
+            <div className="max-h-12">
+              <TagsInput
+                onTagsChange={handleSkillTagsChange}
+                tagsValue={tagsValue}
+                placeholderText="Enter Skill"
+              />
+            </div>
+
+            <div className="flex flex-shrink-0 ">
+              <div className="flex items-center border rounded-lg">
+                <Input
+                  className="w-[12rem] border-none"
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Location"
+                  onKeyDown={handleKeyDown}
+                  // onFocus={() => setIsFocused(true)}
+                  // onBlur={() => setIsFocused(false)}
+                />
+                {/* {!isFocused && <ImLocation className="" />} */}
+              </div>
+              <Button
+                type="submit"
+                className=" bg-white ml-2 rounded-3xl group hover:bg-inherit"
+              >
+                <span className="transform transition-transform duration-300 ease-in-out group-hover:translate-y-[-3px]">
+                  <FaSearch className="text-black" />
+                </span>
+                {/* <span>Search</span> */}
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <LinearTagsInput />
           </div>
         </div>
       </form>
