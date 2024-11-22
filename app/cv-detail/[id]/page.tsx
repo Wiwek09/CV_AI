@@ -9,6 +9,7 @@ import axios from "@/utils/axiosConfig";
 const CVDetailPage = ({ params }: { params: string }) => {
   const [data, setData] = useState<any>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
   const { id }: any = params;
   const pdfUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/cv/${id}.pdf`;
 
@@ -24,12 +25,13 @@ const CVDetailPage = ({ params }: { params: string }) => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching Data", error);
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex h-[100vh] space-x-4 w-full">
-      <Card className="w-[70%]  bg-gray-100">
+      <Card className="w-[70%] bg-gray-100">
         <div className="h-[100vh] ">
           {/* Embed PDF viewer */}
           <iframe
@@ -53,7 +55,6 @@ const CVDetailPage = ({ params }: { params: string }) => {
               <div className="flex flex-col w-max-[60%] flex-wrap pr-3 ">
                 <h1 className="font-bold text-2xl">{data?.name}</h1>
                 <p className="font-semibold">{data?.position}</p>
-                <p></p>
                 <p className="flex gap-2 ">
                   <span>Linkedin:</span>
                   {data?.linkedin_url && (
@@ -71,7 +72,7 @@ const CVDetailPage = ({ params }: { params: string }) => {
                   )}
                 </p>
 
-                <p className="flex gap-2">
+                <p className="flex gap-2 max-w-sm truncate">
                   <span>Website:</span>
                   {data?.website && (
                     <Link href={data?.website} target="_blank">
