@@ -16,6 +16,17 @@ import FolderCreation from "./FolderCreation";
 import FolderList from "./FolderList";
 import { IFolderData } from "@/interfaces/FolderData";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 // import {
 //   AlertDialog,
 //   AlertDialogAction,
@@ -165,9 +176,7 @@ const SideNavBar = () => {
   // };
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      handleFileUpload(event.target.files);
-    }
+    if (event.target.files) handleFileUpload(event.target.files);
   };
 
   const handleDragEnter = (event: DragEvent<HTMLDivElement>) => {
@@ -207,7 +216,7 @@ const SideNavBar = () => {
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
-          className={`relative flex flex-col gap-2 items-center justify-center h-52 border-2 border-dashed border-gray-400 p-4 rounded-md  bg-black text-white transition-all duration-300 ease-in-out ${
+          className={`relative flex flex-col gap-2 items-center justify-center h-52 w-full border-2 border-dashed border-gray-400 p-4 rounded-md  bg-black text-white transition-all duration-300 ease-in-out ${
             isDragging ? "opacity-50 backdrop-blur-sm" : "opacity-100"
           }`}
         >
