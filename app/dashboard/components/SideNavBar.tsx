@@ -7,7 +7,7 @@ import React, {
   useEffect,
 } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { ApiDataContext } from "../context/ApiDataContext";
@@ -137,33 +137,6 @@ const SideNavBar = () => {
     }
   };
 
-  const deleteAllCV = async () => {
-    try {
-      const response = await axiosInstance.delete(`/document/all_document`);
-      if (response.status === 200 && apiData && apiData?.length > 0) {
-        setApiData([]);
-        toast({
-          title: "Deletion Successful",
-          description: "All files have been deleted successfully.",
-          className: "bg-[#7bf772]",
-        });
-      } else {
-        toast({
-          title: "No files",
-          variant: "destructive",
-          description: "Data is Empty",
-        });
-      }
-    } catch (error) {
-      console.error("Error Deleting Data", error);
-      toast({
-        variant: "destructive",
-        title: "An error occurred",
-        description: "Could not delete files.",
-      });
-    }
-  };
-
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       handleFileUpload(event.target.files);
@@ -200,25 +173,6 @@ const SideNavBar = () => {
   return (
     <Card className="border border-black h-[100vh] rounded-none flex flex-col items-center bg-black space-y-6 py-6">
       <h1 className="text-2xl text-center w-full px-4 text-white">CV_AI</h1>
-
-      <div>
-        <Select onValueChange={(value) => setSelectedFolderId(value)}>
-          <SelectTrigger className="w-[180px]  ">
-            <SelectValue placeholder="Select folder to upload" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {folderListData.map((item: any, index) => (
-                <div key={index} className="">
-                  <SelectItem value={item.folder_id}>
-                    {item.folder_name}
-                  </SelectItem>
-                </div>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
       <div className="w-full max-w-sm px-4">
         <div
           onDrop={handleDrop}

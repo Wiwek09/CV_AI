@@ -9,7 +9,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cvai.azurewebsites.net",
+        hostname: "cvai.rebuzzpos.com",
         pathname: "/cv_images/**", // Path to the images in the backend
       },
     ],

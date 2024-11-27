@@ -9,7 +9,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
-// import { Button } from "@/components/ui/button";
 
 const FolderList = ({ updateFolderList }) => {
   const [folders, setFolders] = useState([]);
@@ -31,25 +30,22 @@ const FolderList = ({ updateFolderList }) => {
           axiosInstance
             .get(`/folder/getFiles/${folder.folder_id}`)
             .then((response) => ({
-              folderId: folder.folder_id,
-              files: Object.entries(response.data),
+              [folder.folder_id]: response.data, // Map folder ID directly to files
             }))
             .catch((error) => {
               console.error(
                 `Error fetching contents for folder ${folder.folder_id}:`,
                 error
               );
-              return { folderId: folder.folder_id, files: [] };
+              return { [folder.folder_id]: [] }; // Handle error gracefully
             })
         );
 
         const allContents = await Promise.all(contentsPromises);
 
+        // Merge all folder content objects into one
         const contentsObject = allContents.reduce(
-          (acc, { folderId, files }) => ({
-            ...acc,
-            [folderId]: files,
-          }),
+          (acc, content) => ({ ...acc, ...content }),
           {}
         );
 
@@ -149,21 +145,19 @@ const FolderList = ({ updateFolderList }) => {
           </div>
 
           {openFolder === folder.folder_id && (
-            <div className="mt-2 ml-6 border-l border-gray-600 pl-4">
+            <div className="mt-2 ml-6 border-l border-gray-600 pl-4 max-w-[12rem]">
               {folderContents[folder.folder_id]?.length ? (
-                folderContents[folder.folder_id].map(
-                  ([pdfId, fileName], index) => (
-                    <Link
-                      key={index}
-                      href={`/cv-detail/${pdfId}`}
-                      target="_blank"
-                    >
-                      <div className="flex items-center gap-2 p-1 text-gray-300 ease-in-out hover:bg-gray-700 duration-150 delay-75 rounded">
-                        <span className="truncate">{fileName}</span>
-                      </div>
-                    </Link>
-                  )
-                )
+                folderContents[folder.folder_id].map((file) => (
+                  <Link
+                    key={file.doc_id}
+                    href={`/cv-detail/${file.doc_id}`}
+                    target="_blank"
+                  >
+                    <div className="flex items-center gap-2 p-1 text-gray-300 ease-in-out hover:bg-gray-700 duration-150 delay-75 rounded">
+                      <span className="truncate">{file.doc_name}</span>
+                    </div>
+                  </Link>
+                ))
               ) : (
                 <div className="text-gray-400 italic">No PDFs uploaded.</div>
               )}

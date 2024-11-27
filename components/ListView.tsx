@@ -113,42 +113,9 @@ const ListView = ({ data, searchData }: ListViewProps) => {
     }
   };
 
-  const deleteCV = async (id: string) => {
-    try {
-      const response = await axiosInstance.delete(`/document/document/${id}`);
-      if (response.status === 200) {
-        // Filter out the deleted document
-        setAllData((prevData: any) =>
-          prevData.filter((doc: any) => doc._id !== id)
-        );
-        setSearchResults((prevData: any) =>
-          prevData.filter((doc: any) => doc._id !== id)
-        );
-        toast({
-          title: "Deletion Successful",
-          description: "File has been deleted sucessfully",
-          className: "bg-[#7bf772]",
-        });
-      } else {
-        console.error("Failed to delete document");
-        toast({
-          title: "Failed ",
-          variant: "destructive",
-          description: "Failed to Delete Data",
-        });
-      }
-    } catch (error) {
-      console.error("Error Deletion", error);
-      toast({
-        title: "Deletion Error",
-        variant: "destructive",
-        description: "An error occurred while deleting the document.",
-      });
-    }
-  };
+  const displayedData = isSearching ? searchResults : allData;
 
-  const displayedData =
-    isSearching && searchResults.length > 0 ? searchResults : allData;
+  console.log("SearchData", displayedData);
 
   return (
     <div className="flex flex-col px-4 py-4 rounded-md bg-gray-100 h-[100vh] overflow-y-scroll space-y-5 scrollbar-thin ">
@@ -352,34 +319,6 @@ const ListView = ({ data, searchData }: ListViewProps) => {
                   </Link>
                 </Button>
               </div>
-
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <div className="cursor-pointer absolute right-2 text-2xl text-red-700 hover:scale-125 ease-in-out transition duration-500 ">
-                    <RxCross2 />
-                  </div>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      the data.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      className="bg-red-700 hover:bg-red-500"
-                      onClick={() => deleteCV(item?._id)}
-                    >
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             </div>
           </Card>
         ))
