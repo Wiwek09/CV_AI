@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { Card } from "@/components/ui/card";
 // import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { ApiDataContext } from "../context/ApiDataContext";
@@ -200,7 +201,6 @@ const SideNavBar = () => {
   return (
     <Card className="border border-black h-[100vh] rounded-none flex flex-col items-center bg-black space-y-6 py-6">
       <h1 className="text-2xl text-center w-full px-4 text-white">CV_AI</h1>
-
       <div className="w-full max-w-sm px-4">
         <div
           onDrop={handleDrop}

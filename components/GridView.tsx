@@ -17,6 +17,7 @@ function GridView({ data, searchData }: GridViewProps) {
   const [imageDataID, setImageDataID] = useState<any[]>([]);
   // const contextValue = useContext(ViewContext);
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
 
   // useEffect(() => {
   //   const storedSearchData = sessionStorage.getItem("searchData");
@@ -33,31 +34,48 @@ function GridView({ data, searchData }: GridViewProps) {
   // }, [data, searchData]);
 
   // Trigger loading state based on `data`
-  useEffect(() => {
-    if (data?.length > 0) {
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-  }, [data]);
 
-  // Handle search data and view changes
+  useEffect(() => {
+    if (!searchData) {
+      setLoading(false);
+      setIsSearching(false); // Reset search state when no search data is present
+    }
+  }, [data, searchData]);
+
+  // useEffect(() => {
+  //   if (data?.length > 0) {
+  //     setLoading(false);
+  //     setIsSearching(false);
+  //   } else {
+  //     setLoading(true);
+  //   }
+  // }, [data]);
+
   useEffect(() => {
     if (searchData) {
       setLoading(true);
-      getFullImageData(searchData);
-    } else if (data?.length === 0) {
-      setImageDataID([]);
-      setLoading(false);
+      setIsSearching(true);
+      fetchSearchResults(searchData);
     }
   }, [searchData]);
+
+  // Handle search data and view changes
+  // useEffect(() => {
+  //   if (searchData) {
+  //     setLoading(true);
+  //     getFullImageData(searchData);
+  //   } else if (data?.length === 0) {
+  //     setImageDataID([]);
+  //     setLoading(false);
+  //   }
+  // }, [searchData]);
 
   // useEffect(() => {
   //   if (imageDataID?.length > 0) {
   //   }
   // }, [imageDataID]);
 
-  const getFullImageData = async (searchData: IFormInputData) => {
+  const fetchSearchResults = async (searchData: IFormInputData) => {
     try {
       const response = await axiosInstance.post(
         `/document/search_by_query`,
@@ -69,7 +87,7 @@ function GridView({ data, searchData }: GridViewProps) {
         }
       );
       if (response.status === 200) {
-        setImageDataID(response.data);
+        setImageDataID(response.data || []);
         setLoading(true);
       } else {
         console.error("Unexpected response status:", response.status);
@@ -106,13 +124,35 @@ function GridView({ data, searchData }: GridViewProps) {
   return (
     <div className="masonry-container bg-gray-100">
       {loading ? (
-        <div className="flex justify-between items-center ">
+        <div className="flex justify-between items-center">
           <GridViewSkeleton />
           <GridViewSkeleton />
           <GridViewSkeleton />
         </div>
-      ) : data?.length > 0 && imageDataID.length <= 0 ? (
-        data?.map((item: any, index) => (
+      ) : isSearching ? (
+        imageDataID.length > 0 ? ( // Show search results if available
+          imageDataID.map((item, index) => (
+            <div key={item.doc_id} className="mb-6 cursor-pointer">
+              <Link href={`/cv-detail/${item.doc_id}`} target="_blank">
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/cv_images/${item.img_id}.webp`}
+                  alt={`Image ${index + 1}`}
+                  height={500}
+                  width={700}
+                  className="rounded-lg object-cover shadow-lg w-full h-auto"
+                  loading="lazy"
+                  layout="responsive"
+                />
+              </Link>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-gray-600 mt-4">
+            No Data Available...
+          </div>
+        )
+      ) : data?.length > 0 ? ( // Show initial data if not searching
+        data.map((item, index) => (
           <div key={item.doc_id} className="mb-6 cursor-pointer">
             <Link href={`/cv-detail/${item.doc_id}`} target="_blank">
               <Image
@@ -120,59 +160,17 @@ function GridView({ data, searchData }: GridViewProps) {
                 alt={`Image ${index + 1}`}
                 height={500}
                 width={700}
-                className="rounded-lg object-cover shadow-lg w-full"
-                loading="lazy"
-                layout="responsive"
-              />
-
-              {/* Overlay that appears on hover */}
-              {/* <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex items-center justify-center">
-                <div className="text-white text-center p-4">
-                  <h3 className="text-lg font-semibold mb-2">Overview</h3>
-                  {loading ? (
-                    <div className="flex justify-center items-center">
-                      <div className="spinner-tailwind" role="status">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-sm">{item.doc_name}</p>
-                  )}
-                </div>
-              </div> */}
-            </Link>
-          </div>
-        ))
-      ) : imageDataID?.length > 0 ? (
-        imageDataID.map((item: any, index) => (
-          <div
-            key={index}
-            // onClick={() => router.push(`/cv-detail/${item.doc_id}`)}
-            className="mb-6 cursor-pointer"
-          >
-            <Link href={`/cv-detail/${item.doc_id}`} target="_blank">
-              <Image
-                src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/cv_images/${item.img_id}.webp`}
-                alt={`Image ${index + 1}`}
-                height={500}
-                width={700}
                 className="rounded-lg object-cover shadow-lg w-full h-auto"
                 loading="lazy"
                 layout="responsive"
               />
-
-              {/* Overlay that appears on hover */}
-              {/* <div className="absolute inset-0 bg-black bg-opacity-60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm flex justify-center">
-                <div className="text-white text-center p-4">
-                  <h3 className="text-lg font-bold mb-2">Overview</h3>
-                  <p className="text-sm">{item.skill_summary}</p>
-                </div>
-              </div> */}
             </Link>
           </div>
         ))
       ) : (
-        <div>No Data Available....</div>
+        <div className="text-center text-gray-600 mt-4">
+          No Data Available...
+        </div>
       )}
     </div>
   );

@@ -127,7 +127,7 @@ const SearchFields = () => {
               <TagsInput
                 onTagsChange={handleProgrammingLanguageTagsChange}
                 tagsValue={tagsValue}
-                placeholderText="Enter Programming Language"
+                placeholderText="Programming Language"
               />
             </div>
 
@@ -136,7 +136,7 @@ const SearchFields = () => {
               <TagsInput
                 onTagsChange={handleSkillTagsChange}
                 tagsValue={tagsValue}
-                placeholderText="Enter Skill"
+                placeholderText="Skills"
               />
             </div>
 
