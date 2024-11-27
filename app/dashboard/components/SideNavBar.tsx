@@ -17,17 +17,6 @@ import FolderCreation from "./FolderCreation";
 import FolderList from "./FolderList";
 import { IFolderData } from "@/interfaces/FolderData";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 // import {
 //   AlertDialog,
 //   AlertDialogAction,
