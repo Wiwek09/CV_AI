@@ -9,11 +9,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useToast } from "@/hooks/use-toast";
 
-const FolderList = ({ updateFolderList }) => {
+const FolderList = ({ updateFolderList, setUpdateFolderList }) => {
   const [folders, setFolders] = useState([]);
   const [openFolder, setOpenFolder] = useState([]);
   const [folderContents, setFolderContents] = useState({});
@@ -22,6 +30,9 @@ const FolderList = ({ updateFolderList }) => {
   const [draggedFile, setDraggedFile] = useState(null);
   const [draggedOverFolder, setDraggedOverFolder] = useState(null);
   const [selectedFile, setSelectedFile] = useState<string[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [archiveTarget, setArchiveTarget] = useState(null);
+  const [archiveType, setArchiveType] = useState("");
 
   const { toast } = useToast();
 
@@ -38,7 +49,7 @@ const FolderList = ({ updateFolderList }) => {
           axiosInstance
             .get(`/folder/getFiles/${folder.folder_id}`)
             .then((response) => ({
-              [folder.folder_id]: response.data,
+              [folder.folder_id]: response.data || [],
             }))
             .catch((error) => {
               console.error(
@@ -75,6 +86,95 @@ const FolderList = ({ updateFolderList }) => {
       // Open the folder
       return [...prevOpenFolders, folderId];
     });
+  };
+
+  //Archieve Dailogue Box:
+  const openArchiveDialog = (target, type) => {
+    setArchiveTarget(target);
+    setArchiveType(type);
+    setIsDialogOpen(true);
+  };
+
+  const closeArchiveDialog = () => {
+    setIsDialogOpen(false);
+    setArchiveTarget(null);
+    setArchiveType("");
+  };
+
+  //HandleArchieve for Folder
+  const handleArchive = async () => {
+    if (!archiveTarget) return;
+    console.log("Archive Target:", archiveTarget);
+    console.log("Folder Contents before update:", folderContents);
+    console.log(
+      "Target Folder Contents:",
+      folderContents[archiveTarget?.folder_id]
+    );
+    try {
+      if (archiveType === "folder") {
+        await axiosInstance.post(
+          `/folder/archiveFolder/${archiveTarget.folder_id}`
+        );
+        toast({
+          title: `${archiveTarget.folder_name} archived successfully.`,
+          className: "bg-green-500",
+        });
+
+        // Optionally update folder list
+        setFolders((prev) =>
+          prev.filter((folder) => folder.folder_id !== archiveTarget.folder_id)
+        );
+      } else if (archiveType === "document") {
+        await axiosInstance.post(
+          `/document/archive_document/${archiveTarget.doc_id}`
+        );
+        // console.log("Before update:", folderContents);
+        // Optionally update document list
+        // setFolderContents((prevContents) => {
+        //   const updatedContents = { ...prevContents };
+        //   const folderId = archiveTarget.folder_id;
+        //   // console.log(
+        //   //   "Target folder before update:",
+        //   //   updatedContents[folderId]
+        //   // );
+
+        //   // Convert object to array if needed
+        //   // const folderDocs = Array.isArray(updatedContents[folderId])
+        //   //   ? updatedContents[folderId]
+        //   //   : Object.values(updatedContents[folderId] || {});
+
+        //   // // Safeguard: Perform filter only if folderDocs is now an array
+        //   // updatedContents[folderId] = folderDocs.filter(
+        //   //   (doc) => doc.doc_id !== archiveTarget.doc_id
+        //   // );
+
+        //   // return updatedContents;
+
+        //   if (updatedContents[folderId]) {
+        //     updatedContents[folderId] = updatedContents[folderId].filter(
+        //       (doc) => doc.doc_id !== archiveTarget.doc_id
+        //     );
+        //   }
+
+        //   // console.log("Updated folder contents:", updatedContents[folderId]);
+        //   return updatedContents;
+        // });
+        // Trigger folder content re-fetch
+        setUpdateFolderList((prev) => !prev);
+        toast({
+          title: `${archiveTarget.doc_name} archived successfully.`,
+          className: "bg-green-500",
+        });
+      }
+
+      closeArchiveDialog();
+    } catch (error) {
+      console.error(`Error archiving ${archiveType}:`, error);
+      toast({
+        title: `Failed to archive ${archiveType}.`,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleRename = async (folderId) => {
@@ -271,7 +371,9 @@ const FolderList = ({ updateFolderList }) => {
               <span
                 onClick={() => toggleDropdown(folder.folder_id)}
                 className={`ml-auto w-6 h-6 hover:bg-gray-700 rounded-full items-center justify-center flex transform transition-transform duration-300 ${
-                  openFolder === folder.folder_id ? "rotate-180" : "rotate-0"
+                  openFolder.includes(folder.folder_id)
+                    ? "rotate-180"
+                    : "rotate-0"
                 }`}
               >
                 <FaChevronDown />
@@ -312,8 +414,11 @@ const FolderList = ({ updateFolderList }) => {
                       toast={toast}
                     />
                     <Separator />
-                    <p className="cursor-pointer hover:bg-gray-600 hover:text-white rounded-md">
-                      Archieve
+                    <p
+                      className="cursor-pointer hover:bg-gray-600 hover:text-white rounded-md"
+                      onClick={() => openArchiveDialog(folder, "folder")}
+                    >
+                      Archieve Folder
                     </p>
                   </PopoverContent>
                 </Popover>
@@ -373,8 +478,11 @@ const FolderList = ({ updateFolderList }) => {
                             toast={toast}
                           />
                           <Separator />
-                          <button className="hover:bg-gray-700 w-full h-full p-1 hover:text-white rounded-md">
-                            Archive
+                          <button
+                            className="hover:bg-gray-700 w-full h-full p-1 hover:text-white rounded-md"
+                            onClick={() => openArchiveDialog(file, "document")}
+                          >
+                            Archive Document
                           </button>
                         </PopoverContent>
                       </Popover>
@@ -388,6 +496,38 @@ const FolderList = ({ updateFolderList }) => {
           )}
         </div>
       ))}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Archive {archiveType === "folder" ? "Folder" : "Document"}
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to archive{" "}
+              {archiveType === "folder" ? (
+                <strong>{archiveTarget?.folder_name}</strong>
+              ) : (
+                <strong>{archiveTarget?.doc_name}</strong>
+              )}
+              ?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              className="px-4 py-2 bg-gray-500 text-white rounded-md"
+              onClick={closeArchiveDialog}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-red-500 text-white rounded-md"
+              onClick={handleArchive}
+            >
+              Confirm
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
